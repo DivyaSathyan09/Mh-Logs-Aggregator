@@ -24,17 +24,18 @@ public class MhFileWriter {
 	
 	@Value("${com.mhcure.logfiles.APP.log.dateTime.format}")
 	private String appLogDateTimeFormat;
+	@Value("${com.mhcure.logfiles.backslach}")
+	private String backslash;
 
 
 	public void writeBufferedUsingTreeMap( TreeMap<Long, String> fileContentsTreeMap , int bufSize) throws IOException {
-	    File file = new File(logFilesOutputLocation + "/" + logFilesOutputName);
+	    File file = new File(logFilesOutputLocation + backslash + logFilesOutputName);
 	    // Display the TreeMap which is naturally sorted
 	    TreeMap<Long, String> sortedTreeMapWithFileLines = fileContentsTreeMap;//sortbykey(fileContentsTreeMap);
 	    try {
 	        FileWriter writer = new FileWriter(file);
 	        BufferedWriter bufferedWriter = new BufferedWriter(writer, bufSize);
 	        for (Map.Entry<Long, String> entry : sortedTreeMapWithFileLines.entrySet()) {
-		        //System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());  
 		        writeLineToFile(entry.getValue(), bufferedWriter);
 		    }
 	        bufferedWriter.close();

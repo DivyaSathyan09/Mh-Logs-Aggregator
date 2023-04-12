@@ -5,6 +5,7 @@ import com.example.logs.filereader.MhFileReader;
 import com.example.logs.filewriter.MhFileWriter;
 import com.example.logs.helper.MhFileAggregatoHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
@@ -32,6 +33,15 @@ public class LogAggregatorApplication {
     @Autowired
     private MhFileWriter mhFileWriter;
 
+    @Value("${com.mhcure.logfiles.backslach}")
+    private String backslash;
+    @Value("${com.mhcure.logfiles.outputfiles}")
+    private String outputfiles;
+    @Value("${com.mhcure.logfiles.merge}")
+    private String mergefiles;
+    @Value("${com.mhcure.lofiles.corectvalue}")
+    private String correctvalue;
+
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(LogAggregatorApplication.class, args);
         exitApplication(ctx);
@@ -50,15 +60,15 @@ public class LogAggregatorApplication {
 
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) throws ParseException, IOException {
-        long programStartTime = System.currentTimeMillis();
+        long programStartTime ;
 
         String userInput = "";
         do {
             System.out.println("\n\n\n");
             MhFileAggregatoHelper.printInstructionsOnConsole("Log files folder specified is " +
                     mhFileReader.getMhFileAggregatorProperties().getLogFilesLocation() + " \n"
-                    + "If this is not correct then specify the correct value in property file at " + mhFileAggregatorProperties.getMhFileAggregatorPropertiesLocation() + " and restart the program. \n"
-                    + "To merge all log files from this location, please enter Y or press X to exit the program");
+                    + correctvalue + mhFileAggregatorProperties.getMhFileAggregatorPropertiesLocation() + " and restart the program. \n"
+                    + mergefiles);
             Scanner in = new Scanner(System.in);
             userInput = in.nextLine();
             programStartTime = System.currentTimeMillis();
@@ -67,7 +77,7 @@ public class LogAggregatorApplication {
             } else {
                 if (!userInput.equalsIgnoreCase("Y") && !userInput.equalsIgnoreCase("X")) {
                     MhFileAggregatoHelper.printInstructionsOnConsole("Invalid entry. "
-                            + "To merge all log files from this location, please enter Y or press X to exit the program");
+                            + mergefiles);
 
                 }
             }
@@ -77,7 +87,6 @@ public class LogAggregatorApplication {
         } while (!userInput.equalsIgnoreCase("X") && !userInput.equalsIgnoreCase("Y"));
 
         return args -> {
-            //System.out.println("File Merging finished. Please inspect file at outputpath");
         };
     }
 
@@ -108,9 +117,9 @@ public class LogAggregatorApplication {
                         e.printStackTrace();
                     }
                 } else {
-                    System.out.println("Ignoring file since its output file");
+                    System.out.println(outputfiles);
                 }
-                System.out.println("Finished processing " + fileCounter + "/" + totalFilesCount + " files");
+                System.out.println("Finished processing " + fileCounter +backslash + totalFilesCount + " files");
 
             }
             long fileReadEndTime = System.currentTimeMillis();
@@ -126,7 +135,8 @@ public class LogAggregatorApplication {
             double fileWriteTimeInseconds = getTimeDiffInSeconds(fileWriteEndTime, fileWriteStartTime);
             System.out.println("Total time (in seconds) to write files = " + fileWriteTimeInseconds);
             System.out.println("----------------------****************----------------------------------");
-            System.out.println("Finished merging " + totalFilesCount + " log files. Merged log file is available at  " + mhFileWriter.getLogFilesOutputLocation() + "/" + mhFileWriter.getLogFilesOutputName());
+            System.out.println("Finished merging " + totalFilesCount + " log files. Merged log file is available at "
+                    + mhFileWriter.getLogFilesOutputLocation() + backslash + mhFileWriter.getLogFilesOutputName());
             System.out.println("----------------------****************----------------------------------");
             System.out.println("----------------------****************----------------------------------");
         }

@@ -51,6 +51,16 @@ public class MhFileReader {
 	
 	@Value("${com.mhcure.logfiles.LOCALPUSH.log.dateTime.format}")
 	private String localPushLogDateTimeFormat;
+	@Value("${com.mhcure.logfiles.backslach}")
+	private String backslash;
+	@Value("${com.mhcure.logfiles.appfiletype}")
+	private String appfiletype;
+	@Value("${COM.mhcure.logfiles.sipfiletype}")
+	private String sipfiletype;
+	@Value("${com.mhcure.logfiles.sipisfiletype}")
+	private String sipisfiletype;
+	@Value("${com.mhcure.logfiles.localpushfiletype}")
+	private String localpushfiletype;
 
 	public List<String> getFilesList() {
 		List<String> fileList = new ArrayList<>();
@@ -77,7 +87,7 @@ public class MhFileReader {
 		
 		int logDateTimePatternLength = dateTimeFormatInLogFile.length();
 		Pattern logTypePattern = Pattern.compile(dateTimeRegexPatternInLogFile);
-		FileReader logFileReader = new FileReader(new File(logFilesLocation + "/" + fileName));
+		FileReader logFileReader = new FileReader(new File(logFilesLocation + backslash+ fileName));
 		BufferedReader br = new BufferedReader(logFileReader);
 		 int lineCounter = 0;
 		 Long keyForPreviousLine = null;
@@ -125,7 +135,7 @@ public class MhFileReader {
 			return fileContentsMap;
 	}
 
-	private long getTimeInMilliSeconds(String dateTimeText, String dateTimeFormatInLogFile) throws ParseException {
+	private long getTimeInMilliSeconds(String dateTimeText, String dateTimeFormatInLogFile) {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(dateTimeFormatInLogFile);
 		LocalDateTime parsedTimeStamp = LocalDateTime.parse(dateTimeText,dateFormat);
 		return ZonedDateTime.of(parsedTimeStamp, ZoneId.systemDefault()).toInstant().toEpochMilli();
@@ -134,19 +144,19 @@ public class MhFileReader {
 	private String getDateTimeFormatInLogFile(String fileName) {
 		switch (fileName) {
 			case "App" -> {
-				checkLogFileFormat(fileName, "App");
+				checkLogFileFormat(fileName, appfiletype);
 				return appLogDateTimeFormat;
 			}
 			case "SIP_" -> {
-				checkLogFileFormat(fileName, "SIP_");
+				checkLogFileFormat(fileName, sipfiletype);
 				return sipLogDateTimeFormat;
 			}
 			case "SIPIS_" -> {
-				checkLogFileFormat(fileName, "SIPIS_");
+				checkLogFileFormat(fileName,sipisfiletype);
 				return sipisLogDateTimeFormat;
 			}
 			case "LOCALPUSH_" -> {
-				checkLogFileFormat(fileName, "LOCALPUSH_");
+				checkLogFileFormat(fileName, localpushfiletype);
 				return localPushLogDateTimeFormat;
 			}
 		}
@@ -156,19 +166,19 @@ public class MhFileReader {
 	private String getDateTimeRegexPatternInLogFile(String fileName) {
 		switch (fileName) {
 			case "App" -> {
-				checkLogFileFormat(fileName, "App");
+				checkLogFileFormat(fileName, appfiletype);
 				return appLogDateTimePatternRegexText;
 			}
 			case "SIP_" -> {
-				checkLogFileFormat(fileName, "SIP_");
+				checkLogFileFormat(fileName, sipfiletype);
 				return sipLogDateTimePatternRegexText;
 			}
 			case "SIPIS_" -> {
-				checkLogFileFormat(fileName, "SIPIS_");
+				checkLogFileFormat(fileName, sipisfiletype);
 				return sipsLogDateTimePatternRegexText;
 			}
 			case "LOCALPUSH_" -> {
-				checkLogFileFormat(fileName, "LOCALPUSH_");
+				checkLogFileFormat(fileName,localpushfiletype);
 				return localPushLogDateTimePatternRegexText;
 			}
 		}
