@@ -115,7 +115,6 @@ public class MhFileReader {
 							}
 							lineAddedToMap = true;
 						}
-				} else {
 				}
 				 //if line don't have datetimepart then append to prev line
 				if(lineAddedToMap == false && 
@@ -135,60 +134,30 @@ public class MhFileReader {
 			return fileContentsMap;
 	}
 
-	private long getTimeInMilliSeconds(String dateTimeText, String dateTimeFormatInLogFile) {
+	private long getTimeInMilliSeconds(String dateTimeText, String dateTimeFormatInLogFile) throws ParseException {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(dateTimeFormatInLogFile);
 		LocalDateTime parsedTimeStamp = LocalDateTime.parse(dateTimeText,dateFormat);
 		return ZonedDateTime.of(parsedTimeStamp, ZoneId.systemDefault()).toInstant().toEpochMilli();
 	}
 
 	private String getDateTimeFormatInLogFile(String fileName) {
-		switch (fileName) {
-			case "App" -> {
-				checkLogFileFormat(fileName, appfiletype);
-				return appLogDateTimeFormat;
-			}
-			case "SIP_" -> {
-				checkLogFileFormat(fileName, sipfiletype);
-				return sipLogDateTimeFormat;
-			}
-			case "SIPIS_" -> {
-				checkLogFileFormat(fileName,sipisfiletype);
-				return sipisLogDateTimeFormat;
-			}
-			case "LOCALPUSH_" -> {
-				checkLogFileFormat(fileName, localpushfiletype);
-				return localPushLogDateTimeFormat;
-			}
-		}
-		return appLogDateTimeFormat;
+		return switch (fileName) {
+			case "App" -> appLogDateTimeFormat;
+			case "SIP_" -> sipLogDateTimeFormat;
+			case "SIPIS_" -> sipisLogDateTimeFormat;
+			case "LOCALPUSH_" -> localPushLogDateTimeFormat;
+			default ->appLogDateTimeFormat;
+		};
+
 	}
 
 	private String getDateTimeRegexPatternInLogFile(String fileName) {
-		switch (fileName) {
-			case "App" -> {
-				checkLogFileFormat(fileName, appfiletype);
-				return appLogDateTimePatternRegexText;
-			}
-			case "SIP_" -> {
-				checkLogFileFormat(fileName, sipfiletype);
-				return sipLogDateTimePatternRegexText;
-			}
-			case "SIPIS_" -> {
-				checkLogFileFormat(fileName, sipisfiletype);
-				return sipsLogDateTimePatternRegexText;
-			}
-			case "LOCALPUSH_" -> {
-				checkLogFileFormat(fileName,localpushfiletype);
-				return localPushLogDateTimePatternRegexText;
-			}
-		}
-		return appLogDateTimePatternRegexText;
-	}
-
-	private boolean checkLogFileFormat(String fileName, String fileType) {
-		if(fileName.toUpperCase().startsWith(fileType)) {
-			return true;
-		}
-		return false;
+		return switch (fileName) {
+			case "App" -> appLogDateTimePatternRegexText;
+			case "SIP_" -> sipLogDateTimePatternRegexText;
+			case "SIPIS_" -> sipsLogDateTimePatternRegexText;
+			case "LOCALPUSH_" -> localPushLogDateTimePatternRegexText;
+			default -> appLogDateTimePatternRegexText;
+		};
 	}
 }
