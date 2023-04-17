@@ -61,20 +61,30 @@ public class MhFileReader {
 	private String sipisfiletype;
 	@Value("${com.mhcure.logfiles.localpushfiletype}")
 	private String localpushfiletype;
+	@Value("${com.mhcure.logfiles.nextline")
+	private String NextLine;
+	@Value("${com.mhcure.logfiles.locationis}")
+	private String LogFileLocation;
+	@Value("${com.mhcure.logfiles.validlocation}")
+	private String ValidLocation;
+	@Value("${com.mhcure.logfiles.notfound}")
+	private String NoLogFilesFound;
+	@Value("${com.mhcure.logfiles.bitwiseor}")
+	private String BitwiseOr;
 
 	public List<String> getFilesList() {
 		List<String> fileList = new ArrayList<>();
 		File logFilesLocationFile = new File(logFilesLocation);
-		System.out.println("Log files location is " + logFilesLocation);
+		System.out.println(LogFileLocation + logFilesLocation);
 		if(!logFilesLocationFile.exists()) {
-			MhFileAggregatoHelper.printInstructionsOnConsole(logFilesLocation + " is invalid. Pls specify a valid location");
+			MhFileAggregatoHelper.printInstructionsOnConsole(logFilesLocation + ValidLocation);
 			return fileList;
 		}
 		String[] logFilesArray = logFilesLocationFile.list();
 		if(logFilesArray != null) {
 			fileList = Arrays.asList(logFilesArray);
 		} else {
-			System.out.println("No log files found at " + logFilesLocation );
+			System.out.println(NoLogFilesFound + logFilesLocation );
 			
 		}
 		return fileList;
@@ -95,23 +105,20 @@ public class MhFileReader {
 				 Long keyForLine = null;
 				 boolean lineAddedToMap = false;
 				// System.out.println(line);
-				 String lineToBeInserted = fileName + " | " + line;
+				 String lineToBeInserted = fileName + BitwiseOr + line;
 				if(line != null && line.length() > logDateTimePatternLength) {
 					String dateTimePart = line.substring(0, logDateTimePatternLength);
 					
 					 Matcher appLogTypeMatcher = logTypePattern.matcher(dateTimePart);
-					  //System.out.println("Pattern: " + appLogTypeMatcher.pattern());
 						if (appLogTypeMatcher.find()) {
 							boolean lineStartsWithDatePattern = appLogTypeMatcher.start() == 0;
-							//System.out.println(lineStartsWithDatePattern);
 							long dateTimeInMilliSeconds = getTimeInMilliSeconds(dateTimePart, dateTimeFormatInLogFile);
 							keyForLine = dateTimeInMilliSeconds ;
-							//System.out.println(dateTimePart);
 							if(fileContentsMap.get(keyForLine) != null) {
 								//Since timestamp can be duplicated in a same file
-								fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + "\n" + lineToBeInserted);
+								fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + NextLine + lineToBeInserted);
 							} else {
-								fileContentsMap.put(keyForLine, "\n" + lineToBeInserted );
+								fileContentsMap.put(keyForLine, NextLine + lineToBeInserted );
 							}
 							lineAddedToMap = true;
 						}
@@ -134,7 +141,7 @@ public class MhFileReader {
 			return fileContentsMap;
 	}
 
-	private long getTimeInMilliSeconds(String dateTimeText, String dateTimeFormatInLogFile) throws ParseException {
+	private long getTimeInMilliSeconds(String dateTimeText, String dateTimeFormatInLogFile) {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(dateTimeFormatInLogFile);
 		LocalDateTime parsedTimeStamp = LocalDateTime.parse(dateTimeText,dateFormat);
 		return ZonedDateTime.of(parsedTimeStamp, ZoneId.systemDefault()).toInstant().toEpochMilli();
@@ -150,7 +157,6 @@ public class MhFileReader {
 		};
 
 	}
-
 	private String getDateTimeRegexPatternInLogFile(String fileName) {
 		return switch (fileName) {
 			case "App" -> appLogDateTimePatternRegexText;
