@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @PropertySource("classpath:MhFileAggregator.properties")//Uncomment this line to run from Eclipse
 public class MhFileAggregatorProperties {
 
-//    @Value("${com.mhcure.logfiles.appfiletype}")
+    //    @Value("${com.mhcure.logfiles.appfiletype}")
 //    private final String typeAppFiles;
 //    @Value("${COM.mhcure.logfiles.sipfiletype}")
 //    private final String typeSipFiles;

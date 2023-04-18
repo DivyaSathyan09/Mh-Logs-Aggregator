@@ -73,6 +73,7 @@ public class LogAggregatorApplication {
     private String NextLine;
     @Value("${com.mhcure.lofiles.folderspecified}")
     private String LogFilesFolder;
+
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(LogAggregatorApplication.class, args);
         exitApplication(ctx);
@@ -88,15 +89,16 @@ public class LogAggregatorApplication {
         });
         System.exit(exitCode);
     }
+
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) throws ParseException, IOException {
-        long programStartTime ;
+        long programStartTime;
 
         String userInput = "";
         do {
             System.out.println(NextLine);
             MhFileAggregatoHelper.printInstructionsOnConsole(LogFilesFolder + mhFileReader.
-                    getMhFileAggregatorProperties().getLogFilesLocation()+NextLine + correctvalue +
+                    getMhFileAggregatorProperties().getLogFilesLocation() + NextLine + correctvalue +
                     mhFileAggregatorProperties.getMhFileAggregatorPropertiesLocation() + ToRestartProgram + mergefiles);
             Scanner in = new Scanner(System.in);
             userInput = in.nextLine();
@@ -146,11 +148,11 @@ public class LogAggregatorApplication {
                 } else {
                     System.out.println(outputfiles);
                 }
-                System.out.println(FinishedProcessingFiles + fileCounter +backslash + totalFilesCount + FIles);
+                System.out.println(FinishedProcessingFiles + fileCounter + backslash + totalFilesCount + FIles);
             }
             long fileReadEndTime = System.currentTimeMillis();
             double fileReadTimeInseconds = getTimeDiffInSeconds(fileReadEndTime, fileReadStartTime);
-            System.out.println(TotalTimeToReadFiles+ fileReadTimeInseconds);
+            System.out.println(TotalTimeToReadFiles + fileReadTimeInseconds);
             List<String> fileContentsList = new ArrayList(fileContentsMap.values());
 
             long fileWriteStartTime = System.currentTimeMillis();
@@ -167,6 +169,7 @@ public class LogAggregatorApplication {
             System.out.println(lineseperator);
         }
     }
+
     private double getTimeDiffInSeconds(long endTime, long startTime) {
         return (endTime - startTime) / (1000.0);
     }
