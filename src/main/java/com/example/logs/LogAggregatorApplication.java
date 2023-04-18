@@ -41,7 +41,38 @@ public class LogAggregatorApplication {
     private String mergefiles;
     @Value("${com.mhcure.lofiles.corectvalue}")
     private String correctvalue;
-
+    @Value("${com.mhcure.logfiles.lineseperator}")
+    private String lineseperator;
+    @Value("${com.mhcure.logfiles.totaltime.to.runprogram}")
+    private String ToalTimeToRunProgram;
+    @Value("${com.mhcure.logfiles.totaltime.to.writefiles}")
+    private String TotalTimeToWriteFiles;
+    @Value("${com.mhcure.logfiles.totaltime.to.readfiles}")
+    private String TotalTimeToReadFiles;
+    @Value("${com.mhcure.logfiles.megelogfiles}")
+    private String MergedLogFiles;
+    @Value("${com.mhcure.logfiles.tomergefiles}")
+    private String ToMergeFiles;
+    @Value("${com.mhcure.logfiles.toexitthefiles}")
+    private String ToExitTheFiles;
+    @Value("${com.mhcure.logfiles.restartprogram}")
+    private String ToRestartProgram;
+    @Value("${com.mhcure.logfiles.invalidentry}")
+    private String InvalidEntry;
+    @Value("${com.mhcure.logfiles.filestomerge}")
+    private String FilesToMerge;
+    @Value("${com.mhcure.logfiles.totalfiles}")
+    private String TotalFiles;
+    @Value("${com.mhcure.logfiles.processingfiles}")
+    private String FinishedProcessingFiles;
+    @Value("${com.mhcure.logfiles.mergingfiles}")
+    private String FinishedMergingFiles;
+    @Value("${com.mhcure.logfiles.files}")
+    private String FIles;
+    @Value("${com.mhcure.logfiles.nextline}")
+    private String NextLine;
+    @Value("${com.mhcure.lofiles.folderspecified}")
+    private String LogFilesFolder;
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(LogAggregatorApplication.class, args);
         exitApplication(ctx);
@@ -57,34 +88,31 @@ public class LogAggregatorApplication {
         });
         System.exit(exitCode);
     }
-
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) throws ParseException, IOException {
         long programStartTime ;
 
         String userInput = "";
         do {
-            System.out.println("\n\n\n");
-            MhFileAggregatoHelper.printInstructionsOnConsole("Log files folder specified is " +
-                    mhFileReader.getMhFileAggregatorProperties().getLogFilesLocation() + " \n"
-                    + correctvalue + mhFileAggregatorProperties.getMhFileAggregatorPropertiesLocation() + " and restart the program. \n"
-                    + mergefiles);
+            System.out.println(NextLine);
+            MhFileAggregatoHelper.printInstructionsOnConsole(LogFilesFolder + mhFileReader.
+                    getMhFileAggregatorProperties().getLogFilesLocation()+NextLine + correctvalue +
+                    mhFileAggregatorProperties.getMhFileAggregatorPropertiesLocation() + ToRestartProgram + mergefiles);
             Scanner in = new Scanner(System.in);
             userInput = in.nextLine();
             programStartTime = System.currentTimeMillis();
-            if (userInput.equalsIgnoreCase("Y")) {
+            if (userInput.equalsIgnoreCase(ToMergeFiles)) {
                 performLogAggregation();
             } else {
-                if (!userInput.equalsIgnoreCase("Y") && !userInput.equalsIgnoreCase("X")) {
-                    MhFileAggregatoHelper.printInstructionsOnConsole("Invalid entry. "
+                if (!userInput.equalsIgnoreCase(ToMergeFiles) && !userInput.equalsIgnoreCase(ToExitTheFiles)) {
+                    MhFileAggregatoHelper.printInstructionsOnConsole(InvalidEntry
                             + mergefiles);
-
                 }
             }
             long programEndTime = System.currentTimeMillis();
             double programTimeInseconds = getTimeDiffInSeconds(programEndTime, programStartTime);
-            System.out.println("Total time (in seconds) to run this program = " + programTimeInseconds);
-        } while (!userInput.equalsIgnoreCase("X") && !userInput.equalsIgnoreCase("Y"));
+            System.out.println(ToalTimeToRunProgram + programTimeInseconds);
+        } while (!userInput.equalsIgnoreCase(ToExitTheFiles) && !userInput.equalsIgnoreCase(ToMergeFiles));
 
         return args -> {
         };
@@ -99,8 +127,7 @@ public class LogAggregatorApplication {
         int totalFilesCount = logFilesPathList.size();
         String outputFileName = mhFileWriter.getLogFilesOutputName();
         if (totalFilesCount > 0) {
-            System.out.println("Found total " + totalFilesCount + " files to be merged");
-
+            System.out.println(TotalFiles + totalFilesCount + FilesToMerge);
             int fileCounter = 0;
             long fileReadStartTime = System.currentTimeMillis();
             for (String logFileName : logFilesPathList) {
@@ -119,12 +146,11 @@ public class LogAggregatorApplication {
                 } else {
                     System.out.println(outputfiles);
                 }
-                System.out.println("Finished processing " + fileCounter +backslash + totalFilesCount + " files");
-
+                System.out.println(FinishedProcessingFiles + fileCounter +backslash + totalFilesCount + FIles);
             }
             long fileReadEndTime = System.currentTimeMillis();
             double fileReadTimeInseconds = getTimeDiffInSeconds(fileReadEndTime, fileReadStartTime);
-            System.out.println("Total time (in seconds) to read all files = " + fileReadTimeInseconds);
+            System.out.println(TotalTimeToReadFiles+ fileReadTimeInseconds);
             List<String> fileContentsList = new ArrayList(fileContentsMap.values());
 
             long fileWriteStartTime = System.currentTimeMillis();
@@ -133,15 +159,14 @@ public class LogAggregatorApplication {
 
             long fileWriteEndTime = System.currentTimeMillis();
             double fileWriteTimeInseconds = getTimeDiffInSeconds(fileWriteEndTime, fileWriteStartTime);
-            System.out.println("Total time (in seconds) to write files = " + fileWriteTimeInseconds);
-            System.out.println("----------------------****************----------------------------------");
-            System.out.println("Finished merging " + totalFilesCount + " log files. Merged log file is available at "
+            System.out.println(TotalTimeToWriteFiles + fileWriteTimeInseconds);
+            System.out.println(lineseperator);
+            System.out.println(FinishedMergingFiles + totalFilesCount + MergedLogFiles
                     + mhFileWriter.getLogFilesOutputLocation() + backslash + mhFileWriter.getLogFilesOutputName());
-            System.out.println("----------------------****************----------------------------------");
-            System.out.println("----------------------****************----------------------------------");
+            System.out.println(lineseperator);
+            System.out.println(lineseperator);
         }
     }
-
     private double getTimeDiffInSeconds(long endTime, long startTime) {
         return (endTime - startTime) / (1000.0);
     }

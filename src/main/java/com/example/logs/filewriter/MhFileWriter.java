@@ -26,6 +26,8 @@ public class MhFileWriter {
 	private String appLogDateTimeFormat;
 	@Value("${com.mhcure.logfiles.backslach}")
 	private String backslash;
+	@Value("${com.mhcure.logfiles.buffersize}")
+	private String bufferSize;
 
 
 	public void writeBufferedUsingTreeMap( TreeMap<Long, String> fileContentsTreeMap , int bufSize) throws IOException {
@@ -40,7 +42,7 @@ public class MhFileWriter {
 		    }
 	        bufferedWriter.close();
 		    
-		        System.out.println("Writing buffered (buffer size: " + bufSize + ")... ");
+		        System.out.println(bufferSize + bufSize + ")... ");
 
 	    } finally {
 	        // comment this out if you want to inspect the files afterward
@@ -52,7 +54,6 @@ public class MhFileWriter {
 	    long start = System.currentTimeMillis();
 	        writer.write(record);
 	    long end = System.currentTimeMillis();
-	    //System.out.println((end - start) / 1000f + " seconds");
 	}
 	  // Function to sort map by Key
     public  TreeMap<String, String> sortbykey( Map<String, String> fileContentsMap)
