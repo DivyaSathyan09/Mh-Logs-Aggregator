@@ -13,10 +13,17 @@ import org.springframework.stereotype.Component;
 @PropertySource("classpath:MhFileAggregator.properties")//Uncomment this line to run from Eclipse
 public class MhFileAggregatorProperties {
 
-	
-//	@Value("${secure.properties.location}")//Uncomment this line to run from command prompt
-	private String mhFileAggregatorPropertiesLocation;
+//    @Value("${com.mhcure.logfiles.appfiletype}")
+//    private final String typeAppFiles;
+//    @Value("${COM.mhcure.logfiles.sipfiletype}")
+//    private final String typeSipFiles;
+//    @Value("${com.mhcure.logfiles.sipisfiletype}")
+//    private final String typeSipisFiles;
+//    @Value("${com.mhcure.logfiles.localpushfiletype}")
+//    private final String typeLocalPushFiles;
+    //	@Value("${secure.properties.location}")//Uncomment this line to run from command prompt
+    private String mhFileAggregatorPropertiesLocation;
+    @Value("${com.mhcure.logfiles.location}")
+    private String logFilesLocation;
 
-	@Value("${com.mhcure.logfiles.location}")
-	private String logFilesLocation;
 }

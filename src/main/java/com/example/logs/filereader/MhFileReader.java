@@ -53,14 +53,14 @@ public class MhFileReader {
 	private String localPushLogDateTimeFormat;
 	@Value("${com.mhcure.logfiles.backslach}")
 	private String backslash;
-	@Value("${com.mhcure.logfiles.appfiletype}")
-	private String appfiletype;
-	@Value("${COM.mhcure.logfiles.sipfiletype}")
-	private String sipfiletype;
-	@Value("${com.mhcure.logfiles.sipisfiletype}")
-	private String sipisfiletype;
-	@Value("${com.mhcure.logfiles.localpushfiletype}")
-	private String localpushfiletype;
+//	@Value("${com.mhcure.logfiles.appfiletype}")
+//	private static final String typeAppFiles = null;
+//	@Value("${COM.mhcure.logfiles.sipfiletype}")
+//	private static final String typeSipFiles = null;
+//	@Value("${com.mhcure.logfiles.sipisfiletype}")
+//	private static final String typeSipisFiles = null;
+//	@Value("${com.mhcure.logfiles.localpushfiletype}")
+//	private static final String typeLocalPushFiles = null;
 
 	public List<String> getFilesList() {
 		List<String> fileList = new ArrayList<>();
@@ -100,7 +100,6 @@ public class MhFileReader {
 					String dateTimePart = line.substring(0, logDateTimePatternLength);
 					
 					 Matcher appLogTypeMatcher = logTypePattern.matcher(dateTimePart);
-					  //System.out.println("Pattern: " + appLogTypeMatcher.pattern());
 						if (appLogTypeMatcher.find()) {
 							boolean lineStartsWithDatePattern = appLogTypeMatcher.start() == 0;
 							//System.out.println(lineStartsWithDatePattern);
@@ -111,7 +110,7 @@ public class MhFileReader {
 								//Since timestamp can be duplicated in a same file
 								fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + "\n" + lineToBeInserted);
 							} else {
-								fileContentsMap.put(keyForLine, "\n" + lineToBeInserted );
+                   								fileContentsMap.put(keyForLine, "\n" + lineToBeInserted );
 							}
 							lineAddedToMap = true;
 						}
@@ -134,7 +133,7 @@ public class MhFileReader {
 			return fileContentsMap;
 	}
 
-	private long getTimeInMilliSeconds(String dateTimeText, String dateTimeFormatInLogFile) throws ParseException {
+	private long getTimeInMilliSeconds(String dateTimeText, String dateTimeFormatInLogFile) {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(dateTimeFormatInLogFile);
 		LocalDateTime parsedTimeStamp = LocalDateTime.parse(dateTimeText,dateFormat);
 		return ZonedDateTime.of(parsedTimeStamp, ZoneId.systemDefault()).toInstant().toEpochMilli();
