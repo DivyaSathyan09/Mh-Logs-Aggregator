@@ -33,33 +33,34 @@ public class LogAggregatorApplication {
     @Autowired
     private MhFileWriter mhFileWriter;
 
-    @Value("${com.mhcure.logfiles.backslach}")
+    @Value("${com.mhcure.logfiles.backslash}")
     private String backslash;
-    @Value("${com.mhcure.logfiles.outputfiles}")
+    @Value("${com.mhcure.userInfo.message.outputfiles}")
     private String outputfiles;
-    @Value("${com.mhcure.logfiles.merge}")
+    @Value("${com.mhcure.userPrompt.message.merge}")
     private String mergefiles;
-    @Value("${com.mhcure.lofiles.corectvalue}")
+    @Value("${com.mhcure.userInfo.message.corectvalue}")
     private String correctvalue;
-    @Value("${com.mhcure.logfiles.lineseperator}")
+    @Value("${com.mhcure.userPrompt.message.lineseperator}")
     private String lineseperator;
-    @Value("${com.mhcure.logfiles.totaltime.to.runprogram}")
-    private String ToalTimeToRunProgram;
-    @Value("${com.mhcure.logfiles.totaltime.to.writefiles}")
-    private String TotalTimeToWriteFiles;
-    @Value("${com.mhcure.logfiles.totaltime.to.readfiles}")
-    private String TotalTimeToReadFiles;
-    @Value("${com.mhcure.logfiles.megelogfiles}")
-    private String MergedLogFiles;
-    @Value("${com.mhcure.logfiles.tomergefiles}")
-    private String ToMergeFiles;
+    @Value("${com.mhcure.userInfo.message.totaltime.to.runprogram}")
+    private String toaltimetorunprogram;
+    @Value("${com.mhcure.userInfo.message.totaltime.to.writefiles}")
+    private String totaltimetowritefiles;
+    @Value("${com.mhcure.userInfo.message.totaltime.to.readfiles}")
+    private String totaltimetoreadfiles;
+    @Value("${com.mhcure.userInfo.message.mergelogfiles}")
+    private String mergedlogfiles;
+    @Value("${com.mhcure.logfiles.mergefiles}")
+    private String tomergefiles;
     @Value("${com.mhcure.logfiles.toexitthefiles}")
-    private String ToExitTheFiles;
-    @Value("${com.mhcure.logfiles.restartprogram}")
-    private String ToRestartProgram;
-    @Value("${com.mhcure.logfiles.invalidentry}")
-    private String InvalidEntry;
+    private String toexitthefiles;
+    @Value("${com.mhcure.userPrompt.message.restartprogram}")
+    private String torestartprogram;
+    @Value("${com.mhcure.userInfo.message.invalidentry}")
+    private String invalidentry;
     @Value("${com.mhcure.logfiles.filestomerge}")
+<<<<<<< HEAD
     private String FilesToMerge;
     @Value("${com.mhcure.logfiles.totalfiles}")
     private String TotalFiles;
@@ -73,6 +74,21 @@ public class LogAggregatorApplication {
     private String NextLine;
     @Value("${com.mhcure.lofiles.folderspecified}")
     private String LogFilesFolder;
+=======
+    private String filestomerge;
+    @Value("${com.mhcure.userInfo.message.totalfiles}")
+    private String totalfiles;
+    @Value("${com.mhcure.userInfo.message.processingfiles}")
+    private String finishedprocessingfiles;
+    @Value("${com.mhcure.userInfo.message.mergingfiles}")
+    private String finishedmergingfiles;
+    @Value("${com.mhcure.userInfo.message.files}")
+    private String files;
+    @Value("${com.mhcure.logfiles.newLineChar}")
+    private String newlinechar;
+    @Value("${com.mhcure.userPrompt.message.folderspecified}")
+    private String logfilesfolder;
+>>>>>>> 11b81af9446b9aee3f131ccf96db026d1bc6c76a
 
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(LogAggregatorApplication.class, args);
@@ -96,25 +112,32 @@ public class LogAggregatorApplication {
 
         String userInput = "";
         do {
+<<<<<<< HEAD
             System.out.println(NextLine);
             MhFileAggregatoHelper.printInstructionsOnConsole(LogFilesFolder + mhFileReader.
                     getMhFileAggregatorProperties().getLogFilesLocation() + NextLine + correctvalue +
                     mhFileAggregatorProperties.getMhFileAggregatorPropertiesLocation() + ToRestartProgram + mergefiles);
+=======
+            System.out.println(newlinechar);
+            MhFileAggregatoHelper.printInstructionsOnConsole(logfilesfolder + mhFileReader.
+                    getMhFileAggregatorProperties().getLogfileslocation() + newlinechar + correctvalue +
+                    mhFileAggregatorProperties.getMhFileAggregatorPropertiesLocation() + torestartprogram + mergefiles);
+>>>>>>> 11b81af9446b9aee3f131ccf96db026d1bc6c76a
             Scanner in = new Scanner(System.in);
             userInput = in.nextLine();
             programStartTime = System.currentTimeMillis();
-            if (userInput.equalsIgnoreCase(ToMergeFiles)) {
+            if (userInput.equalsIgnoreCase(tomergefiles)) {
                 performLogAggregation();
             } else {
-                if (!userInput.equalsIgnoreCase(ToMergeFiles) && !userInput.equalsIgnoreCase(ToExitTheFiles)) {
-                    MhFileAggregatoHelper.printInstructionsOnConsole(InvalidEntry
+                if (!userInput.equalsIgnoreCase(tomergefiles) && !userInput.equalsIgnoreCase(toexitthefiles)) {
+                    MhFileAggregatoHelper.printInstructionsOnConsole(invalidentry
                             + mergefiles);
                 }
             }
             long programEndTime = System.currentTimeMillis();
             double programTimeInseconds = getTimeDiffInSeconds(programEndTime, programStartTime);
-            System.out.println(ToalTimeToRunProgram + programTimeInseconds);
-        } while (!userInput.equalsIgnoreCase(ToExitTheFiles) && !userInput.equalsIgnoreCase(ToMergeFiles));
+            System.out.println(toaltimetorunprogram + programTimeInseconds);
+        } while (!userInput.equalsIgnoreCase(toexitthefiles) && !userInput.equalsIgnoreCase(tomergefiles));
 
         return args -> {
         };
@@ -127,9 +150,9 @@ public class LogAggregatorApplication {
         Map<Long, String> fileContentsMap = new HashMap<>();
         TreeMap<Long, String> fileContentsTreeMap = new TreeMap<>();
         int totalFilesCount = logFilesPathList.size();
-        String outputFileName = mhFileWriter.getLogFilesOutputName();
+        String outputFileName = mhFileWriter.getLogfilesoutputname();
         if (totalFilesCount > 0) {
-            System.out.println(TotalFiles + totalFilesCount + FilesToMerge);
+            System.out.println(totalfiles + totalFilesCount + filestomerge);
             int fileCounter = 0;
             long fileReadStartTime = System.currentTimeMillis();
             for (String logFileName : logFilesPathList) {
@@ -148,11 +171,19 @@ public class LogAggregatorApplication {
                 } else {
                     System.out.println(outputfiles);
                 }
+<<<<<<< HEAD
                 System.out.println(FinishedProcessingFiles + fileCounter + backslash + totalFilesCount + FIles);
             }
             long fileReadEndTime = System.currentTimeMillis();
             double fileReadTimeInseconds = getTimeDiffInSeconds(fileReadEndTime, fileReadStartTime);
             System.out.println(TotalTimeToReadFiles + fileReadTimeInseconds);
+=======
+                System.out.println(finishedprocessingfiles + fileCounter + backslash + totalFilesCount + files);
+            }
+            long fileReadEndTime = System.currentTimeMillis();
+            double fileReadTimeInseconds = getTimeDiffInSeconds(fileReadEndTime, fileReadStartTime);
+            System.out.println(totaltimetoreadfiles + fileReadTimeInseconds);
+>>>>>>> 11b81af9446b9aee3f131ccf96db026d1bc6c76a
             List<String> fileContentsList = new ArrayList(fileContentsMap.values());
 
             long fileWriteStartTime = System.currentTimeMillis();
@@ -161,12 +192,12 @@ public class LogAggregatorApplication {
 
             long fileWriteEndTime = System.currentTimeMillis();
             double fileWriteTimeInseconds = getTimeDiffInSeconds(fileWriteEndTime, fileWriteStartTime);
-            System.out.println(TotalTimeToWriteFiles + fileWriteTimeInseconds);
-            System.out.println(lineseperator);
-            System.out.println(FinishedMergingFiles + totalFilesCount + MergedLogFiles
-                    + mhFileWriter.getLogFilesOutputLocation() + backslash + mhFileWriter.getLogFilesOutputName());
-            System.out.println(lineseperator);
-            System.out.println(lineseperator);
+            System.out.println(totaltimetowritefiles + fileWriteTimeInseconds);
+            MhFileAggregatoHelper.printTOConsole((lineseperator));
+            System.out.println(finishedmergingfiles + totalFilesCount + mergedlogfiles
+                    + mhFileWriter.getLogfilesoutputlocation() + backslash + mhFileWriter.getLogfilesoutputname());
+            MhFileAggregatoHelper.printTOConsole((lineseperator));
+            MhFileAggregatoHelper.printTOConsole((lineseperator));
         }
     }
 
