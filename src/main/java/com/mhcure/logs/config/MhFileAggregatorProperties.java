@@ -1,4 +1,4 @@
-package com.example.logs.config;
+package com.mhcure.javatools.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,9 +26,4 @@ public class MhFileAggregatorProperties {
     @Value("${com.mhcure.logfiles.location}")
     private String logFilesLocation;
 
-<<<<<<< HEAD
-=======
-	@Value("${com.mhcure.logfiles.location}")
-	private String logfileslocation;
->>>>>>> 11b81af9446b9aee3f131ccf96db026d1bc6c76a
 }
