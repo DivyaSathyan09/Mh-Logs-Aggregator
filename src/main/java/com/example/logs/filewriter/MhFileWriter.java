@@ -11,27 +11,27 @@ import java.util.TreeMap;
 public class MhFileWriter {
 
 	@Value("${com.mhcure.logfiles.location}")
-	private String logFilesLocation;
+	private String logfileslocation;
 	
 	@Value("${com.mhcure.logfiles.output.location}")
-	private String logFilesOutputLocation;
+	private String logfilesoutputlocation;
 
 	@Value("${com.mhcure.logfiles.output.filename}")
-	private String logFilesOutputName;
+	private String logfilesoutputname;
 
-	//@Value("${com.mhcure.logfiles.APPlogType.dateTime.pattern}")
-	private String appLogDateTimePaternRegexText;
+	@Value("${com.mhcure.logfiles.APP.log.dateTime.pattern}")
+	private String applogdatetimepaternregextext;
 	
 	@Value("${com.mhcure.logfiles.APP.log.dateTime.format}")
-	private String appLogDateTimeFormat;
-	@Value("${com.mhcure.logfiles.backslach}")
+	private String applogdatetimeformat;
+	@Value("${com.mhcure.logfiles.backslash}")
 	private String backslash;
-	@Value("${com.mhcure.logfiles.buffersize}")
-	private String bufferSize;
+	@Value("${com.mhcure.userInfo.message.buffersize}")
+	private String buffersize;
 
 
 	public void writeBufferedUsingTreeMap( TreeMap<Long, String> fileContentsTreeMap , int bufSize) throws IOException {
-	    File file = new File(logFilesOutputLocation + backslash + logFilesOutputName);
+	    File file = new File(logfilesoutputlocation + backslash + logfilesoutputname);
 	    // Display the TreeMap which is naturally sorted
 	    TreeMap<Long, String> sortedTreeMapWithFileLines = fileContentsTreeMap;//sortbykey(fileContentsTreeMap);
 	    try {
@@ -42,7 +42,7 @@ public class MhFileWriter {
 		    }
 	        bufferedWriter.close();
 		    
-		        System.out.println(bufferSize + bufSize + ")... ");
+		        System.out.println(buffersize + bufSize + ")... ");
 
 	    } finally {
 	        // comment this out if you want to inspect the files afterward
@@ -64,6 +64,5 @@ public class MhFileWriter {
         // Copy all data from hashMap into TreeMap
         sortedTreeMapWithFileLines.putAll(fileContentsMap);
         return sortedTreeMapWithFileLines;
-   
     }
 }

@@ -7,6 +7,9 @@ public class MhFileAggregatoHelper {
 		System.out.println("**********************************************************");
 		System.out.println(msg);
 		System.out.println("**********************************************************");
-	}
 
+	}
+	public static void printTOConsole(String msg) {
+		System.out.println(msg);
+	}
 }
