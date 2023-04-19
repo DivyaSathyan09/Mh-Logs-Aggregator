@@ -31,12 +31,17 @@ public class MhFileWriter {
 
 
     public void writeBufferedUsingTreeMap(TreeMap<Long, String> fileContentsTreeMap, int bufSize) throws IOException {
+     int countLines = 0;
         File file = new File(logFilesOutputLocation + backslash + logFilesOutputName);
         // Display the TreeMap which is naturally sorted
         TreeMap<Long, String> sortedTreeMapWithFileLines = fileContentsTreeMap;//sortbykey(fileContentsTreeMap);
 		FileWriter writer = new FileWriter(file);
 		BufferedWriter bufferedWriter = new BufferedWriter(writer, bufSize);
 		for (Map.Entry<Long, String> entry : sortedTreeMapWithFileLines.entrySet()) {
+            countLines++;
+            if (countLines > 20000){
+                createNewOutputFile(fileContentsTreeMap);
+            }
 			writeLineToFile(entry.getValue(), bufferedWriter);
 		}
 		bufferedWriter.close();
@@ -44,6 +49,10 @@ public class MhFileWriter {
 		System.out.println(bufferSize + bufSize + ")... ");
 
 	}
+    private TreeMap<Long, String> createNewOutputFile(TreeMap<Long, String> fileContentsTreeMap){
+
+       return fileContentsTreeMap;
+    }
 
     private void writeLineToFile(String record, Writer writer) throws IOException {
         long start = System.currentTimeMillis();
@@ -51,14 +60,4 @@ public class MhFileWriter {
         long end = System.currentTimeMillis();
     }
 
-    // Function to sort map by Key
-    public TreeMap<String, String> sortbykey(Map<String, String> fileContentsMap) {
-        // TreeMap to store values of HashMap
-        TreeMap<String, String> sortedTreeMapWithFileLines = new TreeMap<>();
-
-        // Copy all data from hashMap into TreeMap
-        sortedTreeMapWithFileLines.putAll(fileContentsMap);
-        return sortedTreeMapWithFileLines;
-
-    }
 }

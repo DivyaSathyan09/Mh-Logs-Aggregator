@@ -6,10 +6,10 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.*;
+import java.security.Key;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,6 +27,8 @@ public class MhFileReader {
 
     @Value("${com.mhcure.logfiles.location}")
     private String logFilesLocation;
+    @Value("${com.mhcure.decrypted.logfiles.location}")
+    private String decryptedFileLocation;
 
     @Value("${com.mhcure.logfiles.APP.log.dateTime.pattern}")
     private String appLogDateTimePatternRegexText;
@@ -61,7 +63,7 @@ public class MhFileReader {
     private String sipisfiletype;
     @Value("${com.mhcure.logfiles.localpushfiletype}")
     private String localpushfiletype;
-    @Value("${com.mhcure.logfiles.nextline")
+ @Value("${com.mhcure.logfiles.next-line}")
     private String NextLine;
     @Value("${com.mhcure.logfiles.locationis}")
     private String LogFileLocation;
@@ -91,13 +93,18 @@ public class MhFileReader {
     }
 
     public Map<Long, String> readFileUsingBufferedReader(String fileName) throws IOException, ParseException {
-        Map<Long, String> fileContentsMap = new HashMap<>();
+        FileReader logFileReader;
+        if (fileName.toLowerCase().endsWith(".encrypted")) {
+            decryptFile(fileName, fileName.substring(0, fileName.lastIndexOf(".")));
+            logFileReader = new FileReader(decryptedFileLocation + backslash + fileName.substring(0, fileName.lastIndexOf(".")));
+        } else {
+            logFileReader = new FileReader(logFilesLocation + backslash + fileName);
+        }
         String dateTimeFormatInLogFile = getDateTimeFormatInLogFile(fileName);
         String dateTimeRegexPatternInLogFile = getDateTimeRegexPatternInLogFile(fileName);
-
+        Map<Long, String> fileContentsMap = new HashMap<>();
         int logDateTimePatternLength = dateTimeFormatInLogFile.length();
         Pattern logTypePattern = Pattern.compile(dateTimeRegexPatternInLogFile);
-        FileReader logFileReader = new FileReader(new File(logFilesLocation + backslash + fileName));
         BufferedReader br = new BufferedReader(logFileReader);
         int lineCounter = 0;
         Long keyForPreviousLine = null;
@@ -105,7 +112,7 @@ public class MhFileReader {
             Long keyForLine = null;
             boolean lineAddedToMap = false;
             // System.out.println(line);
-            String lineToBeInserted = fileName + BitwiseOr + line;
+            String lineToBeInserted = new StringTokenizer(fileName.replaceAll("_"," ")).nextToken() + BitwiseOr + line;
             if (line != null && line.length() > logDateTimePatternLength) {
                 String dateTimePart = line.substring(0, logDateTimePatternLength);
 
@@ -118,7 +125,7 @@ public class MhFileReader {
                         //Since timestamp can be duplicated in a same file
                         fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + NextLine + lineToBeInserted);
                     } else {
-                        fileContentsMap.put(keyForLine, NextLine + lineToBeInserted);
+                        fileContentsMap.put(keyForLine,  lineToBeInserted);
                     }
                     lineAddedToMap = true;
                 }
@@ -141,6 +148,62 @@ public class MhFileReader {
         return fileContentsMap;
     }
 
+    public String performDecryption(String encryptedData) {
+        final byte[] encryptionKey = "s!yAqepesPUtrerePU@Wutr!nAgU5_#h".getBytes();
+        final String ALGO = "AES";
+        Cipher c = null;
+        Key key = null;
+        try {
+            if (key == null)
+                key = new SecretKeySpec(encryptionKey, "AES");
+            if (c == null) {
+                c = Cipher.getInstance("AES");
+                c.init(Cipher.DECRYPT_MODE, key);
+            }
+        } catch (Exception e) {
+            System.out.println("Exception initializing encryption code - check if you have Java JCE installed correctly!");
+            e.printStackTrace();
+
+        }
+        try {
+            byte[] decodedValue = (Base64.getDecoder().decode(encryptedData));
+            byte[] decValue = c.doFinal(decodedValue);
+            return new String(decValue);
+        } catch (Exception exception) {
+            return encryptedData;
+        }
+    }
+
+    public void decryptFile(String sourceFileName, String destinationFileName) {
+        BufferedReader br = null;
+        PrintWriter pw = null;
+        try {
+            br = new BufferedReader(new FileReader(logFilesLocation + backslash + sourceFileName));
+            pw = new PrintWriter(new FileWriter(decryptedFileLocation + backslash + destinationFileName, false));
+            String line;
+            while ((line = br.readLine()) != null)
+                pw.println(performDecryption(line));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (Exception e) {
+            }
+            try {
+                pw.close();
+            } catch (Exception e) {
+            }
+        }
+        //return destinationFileName;
+    }
+
+
+//    private Key generateKey() throws Exception {
+//        Key key = new SecretKeySpec(encryptionKey, "AES");
+//        return key;
+//    }
+
     private long getTimeInMilliSeconds(String dateTimeText, String dateTimeFormatInLogFile) {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(dateTimeFormatInLogFile);
         LocalDateTime parsedTimeStamp = LocalDateTime.parse(dateTimeText, dateFormat);
@@ -148,23 +211,28 @@ public class MhFileReader {
     }
 
     private String getDateTimeFormatInLogFile(String fileName) {
-        return switch (fileName) {
-            case "App" -> appLogDateTimeFormat;
-            case "SIP_" -> sipLogDateTimeFormat;
-            case "SIPIS_" -> sipisLogDateTimeFormat;
-            case "LOCALPUSH_" -> localPushLogDateTimeFormat;
-            default -> appLogDateTimeFormat;
-        };
-
+        if (fileName.toLowerCase().startsWith("App_")) {
+            return appLogDateTimeFormat;
+        } else if (fileName.startsWith("SIP_")) {
+            return sipLogDateTimeFormat;
+        } else if (fileName.startsWith("SIPIS_")) {
+            return sipisLogDateTimeFormat;
+        } else if (fileName.startsWith("LOCALPUSH_")) {
+            return localPushLogDateTimeFormat;
+        }
+        return appLogDateTimeFormat;
     }
 
     private String getDateTimeRegexPatternInLogFile(String fileName) {
-        return switch (fileName) {
-            case "App" -> appLogDateTimePatternRegexText;
-            case "SIP_" -> sipLogDateTimePatternRegexText;
-            case "SIPIS_" -> sipsLogDateTimePatternRegexText;
-            case "LOCALPUSH_" -> localPushLogDateTimePatternRegexText;
-            default -> appLogDateTimePatternRegexText;
-        };
+        if (fileName.toLowerCase().startsWith("App_")) {
+            return appLogDateTimePatternRegexText;
+        } else if (fileName.startsWith("SIP_")) {
+            return sipLogDateTimePatternRegexText;
+        } else if (fileName.startsWith("SIPIS_")) {
+            return sipsLogDateTimePatternRegexText;
+        } else if (fileName.startsWith("LOCALPUSH_")) {
+            return localPushLogDateTimePatternRegexText;
+        }
+        return appLogDateTimePatternRegexText;
     }
 }
