@@ -29,13 +29,18 @@ public class MhFileWriter {
 
     public void writeToFile(TreeMap<Long, String> fileContentsTreeMap) throws IOException {
         int bufSize = 4 * (int) MEG;
-        File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName);
+        double countLines = 0;
+        File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH.getKey() + logFilesOutPutName);
         // Display the TreeMap which is naturally sorted
         TreeMap<Long, String> sortedTreeMapWithFileLines = fileContentsTreeMap;
         FileWriter writer = new FileWriter(file);
         BufferedWriter bufferedWriter = new BufferedWriter(writer, bufSize);
         for (Map.Entry<Long, String> entry : sortedTreeMapWithFileLines.entrySet()) {
+//            if(countLines > 10.0){
+//                bufferedWriter = new BufferedWriter(new FileWriter(logFilesOutPutLocation + MhFileConstants.BACKSLASH.getKey() + "newOutPutFile"), bufSize);
+//            }
             writeLineToFile(entry.getValue(), bufferedWriter);
+            countLines++;
         }
         bufferedWriter.close();
 

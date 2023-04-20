@@ -32,11 +32,11 @@ public class LogAggregatorApplication {
     @Autowired
     private MhFileWriter mhFileWriter;
 
-    @Value("${com.mhcure.userInfo.message.outputfiles}")
-    private String outPutFiles;
-    @Value("${com.mhcure.userPrompt.message.merge}")
-    private String mergedFile;
-    @Value("${com.mhcure.userInfo.message.corectvalue}")
+    @Value("${com.mhcure.userInfo.message.ignore_outputfiles}")
+    private String ignoreOutPutFilesMessage;
+    @Value("${com.mhcure.userPrompt.message.proccedWithMerge}")
+    private String mergeFileProceedMessage;
+    @Value("${com.mhcure.userPrompt.message.correctFolderValue}")
     private String correctValue;
     @Value("${com.mhcure.userInfo.message.totaltime.to.runprogram}")
     private String totalTimeToRunProgram;
@@ -46,15 +46,15 @@ public class LogAggregatorApplication {
     private String totalTimeToReadFiles;
     @Value("${com.mhcure.userInfo.message.mergelogfiles}")
     private String mergedLogFiles;
-    @Value("${com.mhcure.logfiles.mergefiles}")
+    @Value("${com.mhcure.logfiles.mergefiles_yes_value}")
     private String toMergeFiles;
-    @Value("${com.mhcure.logfiles.toexitthefiles}")
-    private String toExitTheProgramme;
+    @Value("${com.mhcure.logfiles.toExit}")
+    private String valueToExitApplication;
     @Value("${com.mhcure.userPrompt.message.restartprogram}")
-    private String toRestartTheProgramme;
+    private String restartProgrammeMessage;
     @Value("${com.mhcure.userInfo.message.invalidentry}")
-    private String inValidEntry;
-    @Value("${com.mhcure.logfiles.filestomerge}")
+    private String inValidEntryMessage;
+    @Value("${com.mhcure.userInfo.message.filesTBeMerge}")
     private String filesToMere;
     @Value("${com.mhcure.userInfo.message.totalfiles}")
     private String totalFiles;
@@ -66,9 +66,9 @@ public class LogAggregatorApplication {
     private String files;
     @Value("${com.mhcure.userPrompt.message.folderspecified}")
     private String logFilesFolder;
-    @Value("${com.mhcure.logfiles.validkey.to.save.decrypted.files}")
+    @Value("${com.mhcure.logfiles.save.decrypted.files_yes_value}")
     private String toSaveDecryptedFiles;
-    @Value("${com.mhcure.logfiles.invalidkey.to.save.decrypted.files}")
+    @Value("${com.mhcure.logfiles.save.decrypted.files_no_value}")
     private String toContinueWithoutSaving;
     private String keyToSaveDecryptedFiles;
 
@@ -102,23 +102,23 @@ public class LogAggregatorApplication {
             System.out.println(MhFileConstants.NEW_LINE_CHAR.getKey());
             MhFileAggregatorHelper.printInstructionsOnConsole(logFilesFolder + mhFileReader.
                     getMhFileAggregatorProperties().getLogfileslocation() + MhFileConstants.NEW_LINE_CHAR.getKey() + correctValue +
-                    mhFileAggregatorProperties.getMhFileAggregatorPropertiesLocation() + toRestartTheProgramme + mergedFile);
+                    mhFileAggregatorProperties.getMhFileAggregatorPropertiesLocation() + restartProgrammeMessage + mergeFileProceedMessage);
             Scanner in = new Scanner(System.in);
             userInput = in.nextLine();
             programStartTime = System.currentTimeMillis();
             if (userInput.equalsIgnoreCase(toMergeFiles)) {
                 performLogAggregation();
             } else {
-                if (!userInput.equalsIgnoreCase(toMergeFiles) && !userInput.equalsIgnoreCase(toExitTheProgramme)) {
-                    MhFileAggregatorHelper.printInstructionsOnConsole(inValidEntry
-                            + mergedFile);
+                if (!userInput.equalsIgnoreCase(toMergeFiles) && !userInput.equalsIgnoreCase(valueToExitApplication)) {
+                    MhFileAggregatorHelper.printInstructionsOnConsole(inValidEntryMessage
+                            + mergeFileProceedMessage);
                 }
             }
             long programEndTime = System.currentTimeMillis();
             double programTimeInseconds = getTimeDiffInSeconds(programEndTime, programStartTime);
 
             System.out.println(totalTimeToRunProgram + programTimeInseconds);
-        } while (!userInput.equalsIgnoreCase(toExitTheProgramme) && !userInput.equalsIgnoreCase(toMergeFiles));
+        } while (!userInput.equalsIgnoreCase(valueToExitApplication) && !userInput.equalsIgnoreCase(toMergeFiles));
 
         return args -> {
         };
@@ -157,7 +157,7 @@ public class LogAggregatorApplication {
                         e.printStackTrace();
                     }
                 } else {
-                  System.out.println(outPutFiles);
+                  System.out.println(ignoreOutPutFilesMessage);
                 }
                 System.out.println(finishedProcessingFiles + fileCounter + MhFileConstants.BACKSLASH.getKey() + totalFilesCount + files);
 
