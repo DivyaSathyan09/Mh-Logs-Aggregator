@@ -1,7 +1,7 @@
 package com.mhcure.logmerge.filereader;
 
 import com.mhcure.logmerge.config.MhFileAggregatorProperties;
-import com.mhcure.logmerge.constants.UserPromptConstants;
+import com.mhcure.logmerge.constants.MhFileConstants;
 import com.mhcure.logmerge.helper.MhFileAggregatorHelper;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class MhFileReader {
     @Autowired
     MhFileAggregatorProperties mhFileAggregatorProperties;
 
-    @Value("${com.mhcure.logfiles.location}")
+    @Value("${logfiles.location}")
     private String logFilesLocation;
 
     @Value("${com.mhcure.logfiles.APP.log.dateTime.pattern}")
@@ -53,34 +53,31 @@ public class MhFileReader {
 
     @Value("${com.mhcure.logfiles.LOCALPUSH.log.dateTime.format}")
     private String localPushLogDateTimeFormat;
-    @Value("${com.mhcure.logfiles.backslash}")
-    private String backslash;
-    @Value("${com.mhcure.logfiles.appfiletype}")
-    private String appFileType;
-    @Value("${com.mhcure.logfiles.sipfiletype}")
-    private String sipFileType;
-    @Value("${com.mhcure.logfiles.sipisfiletype}")
-    private String sipisFileType;
-    @Value("${com.mhcure.logfiles.localpushfiletype}")
-    private String localPushFileType;
-    @Value("${com.mhcure.logfiles.newLineChar.for.mergedfile}")
-    private String newLineChar;
+    @Value("${APP_files_prefix}")
+    private String appFilePrefix;
+    @Value("${SIP_files_prefix}")
+    private String sipFilePrefix;
+    @Value("${SIPIS_files_prefix}")
+    private String sipisFilePrefix;
+    @Value("${LOCALPUSH_files_prefix}")
+    private String localPushFilePrefix;
     @Value("${com.mhcure.userPrompt.message.locationis}")
     private String logFileLocation;
     @Value("${com.mhcure.userInfo.message.validlocation}")
     private String validLocation;
     @Value("${com.mhcure.userInfo.message.notfound}")
     private String noLogFilesFound;
-    @Value("${com.mhcure.logfiles.bitwiseor}")
-    private String separator;
     @Value("${com.mhcure.logfiles.decrypted.dateTime.format}")
     private String decryptedDateTimeFormat;
     @Value("${com.mhcure.logfiles.decrypted.dateTime.pattern}")
     private String decryptedDateTimePattern;
-    @Value("${wcom.mhcure.logfiles.encryptionKey}")
+    @Value("${logfiles.encryptionKey}")
     private String encryptionKey;
     @Value("${com.mhcure.logfiles.encryptedFileExtension}")
     private String encryptFileExtension;
+    @Value("${com.mhcure.logfiles.invalid_file}")
+    private String invalidFile;
+
 
     public List<String> getFilesList() {
         List<String> fileList = new ArrayList<>();
@@ -103,11 +100,11 @@ public class MhFileReader {
     public Map<Long, String> readFileUsingBufferedReader(String fileName) throws Exception {
         Map<Long, String> fileContentsMap = new HashMap<>();
         FileReader logFileReader = null;
-        File logFile = new File(logFilesLocation + backslash + fileName);
+        File logFile = new File(logFilesLocation + MhFileConstants.BACKSLASH.getKey() + fileName);
         boolean isEncryptedFile = false;
         Cipher cipherObject = null;
         if (!logFile.isFile()) {
-            System.out.println(fileName + UserPromptConstants.PROMPT_MESSAGE_WHEN_FILE_IS_INVALID.getKey());
+            System.out.println(fileName + invalidFile);
             return fileContentsMap;
         }
         logFileReader = new FileReader(logFile);
@@ -130,7 +127,7 @@ public class MhFileReader {
             Long keyForLine = null;
             boolean lineAddedToMap = false;
             // System.out.println(line);
-            String lineToBeInserted = new StringTokenizer(fileName.replaceAll("_", " ")).nextToken() + separator + line;
+            String lineToBeInserted = new StringTokenizer(fileName.replaceAll("_", " ")).nextToken() + MhFileConstants.FILENAME_LOGS_TMT_SEPARATOR.getKey() + line;
             if (line != null && line.length() > logDateTimePatternLength) {
                 String dateTimePart = line.substring(0, logDateTimePatternLength);
 
@@ -141,7 +138,7 @@ public class MhFileReader {
                     keyForLine = dateTimeInMilliSeconds;
                     if (fileContentsMap.get(keyForLine) != null) {
                         //Since timestamp can be duplicated in a same file
-                        fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + newLineChar + lineToBeInserted);
+                        fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + MhFileConstants.NEW_LINE_CHAR.getKey() + lineToBeInserted);
                     } else {
                         fileContentsMap.put(keyForLine, lineToBeInserted);
                     }
@@ -201,26 +198,26 @@ public class MhFileReader {
     }
 
     private String getDateTimeFormatInLogFile(String fileName) {
-        if (fileName.startsWith(appFileType)) {
+        if (fileName.startsWith(appFilePrefix)) {
             return fileName.endsWith(encryptFileExtension) ? decryptedDateTimeFormat : appLogDateTimeFormat;
-        } else if (fileName.startsWith(sipFileType)) {
+        } else if (fileName.startsWith(sipFilePrefix)) {
             return sipLogDateTimeFormat;
-        } else if (fileName.startsWith(sipisFileType)) {
+        } else if (fileName.startsWith(sipisFilePrefix)) {
             return sipisLogDateTimeFormat;
-        } else if (fileName.startsWith(localPushFileType)) {
+        } else if (fileName.startsWith(localPushFilePrefix)) {
             return localPushLogDateTimeFormat;
         }
         return appLogDateTimeFormat;
     }
 
     private String getDateTimeRegexPatternInLogFile(String fileName) {
-        if (fileName.startsWith(appFileType)) {
+        if (fileName.startsWith(appFilePrefix)) {
             return fileName.endsWith(encryptFileExtension) ? decryptedDateTimePattern : appLogDateTimePatternRegexText;
-        } else if (fileName.startsWith(sipFileType)) {
+        } else if (fileName.startsWith(sipFilePrefix)) {
             return sipLogDateTimePatternRegexText;
-        } else if (fileName.startsWith(sipisFileType)) {
+        } else if (fileName.startsWith(sipisFilePrefix)) {
             return sipsLogDateTimePatternRegexText;
-        } else if (fileName.startsWith(localPushFileType)) {
+        } else if (fileName.startsWith(localPushFilePrefix)) {
             return localPushLogDateTimePatternRegexText;
         }
         return appLogDateTimePatternRegexText;

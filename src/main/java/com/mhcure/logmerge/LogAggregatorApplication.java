@@ -1,7 +1,7 @@
 package com.mhcure.logmerge;
 
 import com.mhcure.logmerge.config.MhFileAggregatorProperties;
-import com.mhcure.logmerge.constants.UserPromptConstants;
+import com.mhcure.logmerge.constants.MhFileConstants;
 import com.mhcure.logmerge.filereader.MhFileReader;
 import com.mhcure.logmerge.filewriter.MhFileWriter;
 import com.mhcure.logmerge.helper.MhFileAggregatorHelper;
@@ -32,16 +32,12 @@ public class LogAggregatorApplication {
     @Autowired
     private MhFileWriter mhFileWriter;
 
-    @Value("${com.mhcure.logfiles.backslash}")
-    private String backSlash;
     @Value("${com.mhcure.userInfo.message.outputfiles}")
     private String outPutFiles;
     @Value("${com.mhcure.userPrompt.message.merge}")
     private String mergedFile;
     @Value("${com.mhcure.userInfo.message.corectvalue}")
     private String correctValue;
-    @Value("${com.mhcure.userPrompt.message.lineseperator}")
-    private String lineSeparator;
     @Value("${com.mhcure.userInfo.message.totaltime.to.runprogram}")
     private String totalTimeToRunProgram;
     @Value("${com.mhcure.userInfo.message.totaltime.to.writefiles}")
@@ -68,8 +64,6 @@ public class LogAggregatorApplication {
     private String finishedMergingFiles;
     @Value("${com.mhcure.userInfo.message.files}")
     private String files;
-    @Value("${com.mhcure.logfiles.newLineChar}")
-    private String newLineChar;
     @Value("${com.mhcure.userPrompt.message.folderspecified}")
     private String logFilesFolder;
     @Value("${com.mhcure.logfiles.validkey.to.save.decrypted.files}")
@@ -77,8 +71,11 @@ public class LogAggregatorApplication {
     @Value("${com.mhcure.logfiles.invalidkey.to.save.decrypted.files}")
     private String toContinueWithoutSaving;
     private String keyToSaveDecryptedFiles;
-    @Value("${com.mhcure.logfiles.backslash}")
-    private String backslash;
+
+    @Value("${com.mhcure.logfiles.ask_to_save.decrypted.files}")
+    private String messageToStoreDecryptedFiles;
+    @Value("${com.mhcure.logfiles.invalid.entry_to_save_decrypted.files}")
+    private String invalidEntryToStoreDecryptedFiles;
 
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(LogAggregatorApplication.class, args);
@@ -102,9 +99,9 @@ public class LogAggregatorApplication {
 
         String userInput = "";
         do {
-            System.out.println(newLineChar);
+            System.out.println(MhFileConstants.NEW_LINE_CHAR.getKey());
             MhFileAggregatorHelper.printInstructionsOnConsole(logFilesFolder + mhFileReader.
-                    getMhFileAggregatorProperties().getLogfileslocation() + newLineChar + correctValue +
+                    getMhFileAggregatorProperties().getLogfileslocation() + MhFileConstants.NEW_LINE_CHAR.getKey() + correctValue +
                     mhFileAggregatorProperties.getMhFileAggregatorPropertiesLocation() + toRestartTheProgramme + mergedFile);
             Scanner in = new Scanner(System.in);
             userInput = in.nextLine();
@@ -138,10 +135,10 @@ public class LogAggregatorApplication {
         String outputFileName = mhFileWriter.getLogFilesOutPutName();
         if (totalFilesCount > 0) {
             System.out.println(totalFiles + totalFilesCount + filesToMere);
-            System.out.println(UserPromptConstants.PROMPT_MESSAGE_TO_ASK_USER_FOR_SAVING_DECRYPTED_FILES.getKey());
+            System.out.println(messageToStoreDecryptedFiles);
             keyToSaveDecryptedFiles = new Scanner(System.in).next();
             while (!keyToSaveDecryptedFiles.equalsIgnoreCase(toSaveDecryptedFiles) && !keyToSaveDecryptedFiles.equalsIgnoreCase(toContinueWithoutSaving)) {
-                System.out.println(UserPromptConstants.PROMPT_MESSAGE_AT_INVALID_KEY_FOR_SAVING_DECRYPTED_FILES.getKey());
+                System.out.println(invalidEntryToStoreDecryptedFiles);
                 keyToSaveDecryptedFiles = new Scanner(System.in).next();
             }
             int fileCounter = 0;
@@ -160,9 +157,9 @@ public class LogAggregatorApplication {
                         e.printStackTrace();
                     }
                 } else {
-                    System.out.println(outPutFiles);
+                  System.out.println(outPutFiles);
                 }
-                System.out.println(finishedProcessingFiles + fileCounter + backSlash + totalFilesCount + files);
+                System.out.println(finishedProcessingFiles + fileCounter + MhFileConstants.BACKSLASH.getKey() + totalFilesCount + files);
 
                 //Write Decrypted File
                 if (MhFileAggregatorHelper.isFileEncrypted(logFileName)) {
@@ -175,11 +172,7 @@ public class LogAggregatorApplication {
             long fileReadEndTime = System.currentTimeMillis();
             double fileReadTimeInseconds = getTimeDiffInSeconds(fileReadEndTime, fileReadStartTime);
             System.out.println(totalTimeToReadFiles + fileReadTimeInseconds);
-            System.out.println(finishedProcessingFiles + fileCounter + backslash + totalFilesCount + files);
         }
-        long fileReadEndTime = System.currentTimeMillis();
-        double fileReadTimeInseconds = getTimeDiffInSeconds(fileReadEndTime, fileReadEndTime);
-        System.out.println(totalTimeToReadFiles + fileReadTimeInseconds);
         List<String> fileContentsList = new ArrayList(fileContentsMap.values());
 
         long fileWriteStartTime = System.currentTimeMillis();
@@ -187,13 +180,13 @@ public class LogAggregatorApplication {
         mhFileWriter.writeToFile(fileContentsTreeMap);// UseThisToUseTreeMap
 
         long fileWriteEndTime = System.currentTimeMillis();
-        double fileWriteTimeInseconds = getTimeDiffInSeconds(fileWriteEndTime, fileWriteStartTime);
-        System.out.println(totalTimeToWriteFiles + fileWriteTimeInseconds);
-        System.out.println(lineSeparator);
+        double fileWriteTimeInSeconds = getTimeDiffInSeconds(fileWriteEndTime, fileWriteStartTime);
+        System.out.println(totalTimeToWriteFiles + fileWriteTimeInSeconds);
+        System.out.println(MhFileConstants.LINE_SEPARATOR.getKey());
         System.out.println(finishedMergingFiles + totalFilesCount + mergedLogFiles
-                + mhFileWriter.getLogFilesOutPutLocatiobn() + backSlash + mhFileWriter.getLogFilesOutPutLocatiobn());
-        System.out.println(lineSeparator);
-        System.out.println(lineSeparator);
+                + mhFileWriter.getLogFilesOutPutLocation() + MhFileConstants.BACKSLASH.getKey() + mhFileWriter.getLogFilesOutPutLocation());
+        System.out.println(MhFileConstants.LINE_SEPARATOR.getKey());
+        System.out.println(MhFileConstants.LINE_SEPARATOR.getKey());
     }
 
 

@@ -17,6 +17,6 @@ public class MhFileAggregatorProperties {
     //	@Value("${secure.properties.location}")//Uncomment this line to run from command prompt
     private String mhFileAggregatorPropertiesLocation;
 
-    @Value("${com.mhcure.logfiles.location}")
+    @Value("${logfiles.location}")
     private String logfileslocation;
 }
