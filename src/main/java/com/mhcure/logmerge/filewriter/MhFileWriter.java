@@ -1,6 +1,8 @@
 package com.mhcure.logmerge.filewriter;
 
 import com.mhcure.logmerge.constants.MhFileConstants;
+import com.mhcure.logmerge.utils.MhMessagePropertiesFileReader;
+import com.mhcure.logmerge.utils.MhMessageKeyEnum;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -22,8 +24,6 @@ public class MhFileWriter {
     private String appLogDateTimePatternRegex;
     @Value("${com.mhcure.logfiles.APP.log.dateTime.format}")
     private String appLOgDateTimeFormat;
-    @Value("${com.mhcure.userInfo.message.buffersize}")
-    private String bufferSizeForWritingToFile;
     @Value("${generated_decrypted.files_location}")
     private String decryptedFileLocation;
 
@@ -44,7 +44,7 @@ public class MhFileWriter {
         }
         bufferedWriter.close();
 
-        System.out.println(bufferSizeForWritingToFile + bufSize + ")... ");
+        System.out.println(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.WRITE_BUFFERED_SIZE.getKey()) + bufSize + ")... ");
 
     }
 

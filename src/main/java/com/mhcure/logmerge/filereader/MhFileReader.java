@@ -3,6 +3,8 @@ package com.mhcure.logmerge.filereader;
 import com.mhcure.logmerge.config.MhFileAggregatorProperties;
 import com.mhcure.logmerge.constants.MhFileConstants;
 import com.mhcure.logmerge.helper.MhFileAggregatorHelper;
+import com.mhcure.logmerge.utils.MhMessagePropertiesFileReader;
+import com.mhcure.logmerge.utils.MhMessageKeyEnum;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,12 +63,6 @@ public class MhFileReader {
     private String sipisFilePrefix;
     @Value("${LOCALPUSH_files_prefix}")
     private String localPushFilePrefix;
-    @Value("${com.mhcure.userPrompt.message.locationis}")
-    private String logFileLocation;
-    @Value("${com.mhcure.userInfo.message.validlocation}")
-    private String validLocation;
-    @Value("${com.mhcure.userInfo.message.notfound}")
-    private String noLogFilesFound;
     @Value("${com.mhcure.logfiles.decrypted.dateTime.format}")
     private String decryptedDateTimeFormat;
     @Value("${com.mhcure.logfiles.decrypted.dateTime.pattern}")
@@ -75,23 +71,20 @@ public class MhFileReader {
     private String encryptionKey;
     @Value("${com.mhcure.logfiles.encryptedFileExtension}")
     private String encryptFileExtension;
-    @Value("${com.mhcure.logfiles.invalid_file}")
-    private String invalidFile;
-
 
     public List<String> getFilesList() {
         List<String> fileList = new ArrayList<>();
         File logFilesLocationFile = new File(logFilesLocation);
-        System.out.println(logFileLocation + logFilesLocation);
+        System.out.println(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_LOG_FILES_LOCATION.getKey()) + logFilesLocation);
         if (!logFilesLocationFile.exists()) {
-            MhFileAggregatorHelper.printInstructionsOnConsole(logFilesLocation + validLocation);
+            MhFileAggregatorHelper.printInstructionsOnConsole(logFilesLocation + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_INVALID_FILE_LOCATION.getKey()));
             return fileList;
         }
         String[] logFilesArray = logFilesLocationFile.list();
         if (logFilesArray != null) {
             fileList = Arrays.asList(logFilesArray);
         } else {
-            System.out.println(noLogFilesFound + logFilesLocation);
+            System.out.println(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_NO_FILES_FOUND.getKey()) + logFilesLocation);
 
         }
         return fileList;
@@ -104,7 +97,7 @@ public class MhFileReader {
         boolean isEncryptedFile = false;
         Cipher cipherObject = null;
         if (!logFile.isFile()) {
-            System.out.println(fileName + invalidFile);
+            System.out.println(fileName + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.INVALID_INPUT_TO_SAVE_DECRYPTED_FILE.getKey()));
             return fileContentsMap;
         }
         logFileReader = new FileReader(logFile);
