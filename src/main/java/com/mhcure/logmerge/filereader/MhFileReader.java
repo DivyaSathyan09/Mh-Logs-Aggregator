@@ -1,13 +1,16 @@
-package com.example.logs.filereader;
+package com.mhcure.logmerge.filereader;
 
-import com.example.logs.config.MhFileAggregatorProperties;
-import com.example.logs.helper.MhFileAggregatoHelper;
+import com.mhcure.logmerge.config.MhFileAggregatorProperties;
+import com.mhcure.logmerge.constants.UserPromptConstants;
+import com.mhcure.logmerge.helper.MhFileAggregatoHelper;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
-import java.text.ParseException;
+import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -51,58 +54,81 @@ public class MhFileReader {
 	@Value("${com.mhcure.logfiles.backslash}")
 	private String backslash;
 	@Value("${com.mhcure.logfiles.appfiletype}")
-	private String appfiletype;
+	private String appFileType;
 	@Value("${com.mhcure.logfiles.sipfiletype}")
-	private String sipfiletype;
+	private String sipFileType;
 	@Value("${com.mhcure.logfiles.sipisfiletype}")
-	private String sipisfiletype;
+	private String sipisFileType;
 	@Value("${com.mhcure.logfiles.localpushfiletype}")
-	private String localpushfiletype;
-	@Value("${com.mhcure.logfiles.newLineChar")
-	private String newlinechar;
+	private String localPushFileType;
+	@Value("${com.mhcure.logfiles.newLineChar.for.mergedfile}")
+	private String newLineChar;
 	@Value("${com.mhcure.userPrompt.message.locationis}")
-	private String logfilelocation;
+	private String logFileLocation;
 	@Value("${com.mhcure.userInfo.message.validlocation}")
-	private String validlocation;
+	private String validLocation;
 	@Value("${com.mhcure.userInfo.message.notfound}")
-	private String nologfilesfound;
+	private String noLogFilesFound;
 	@Value("${com.mhcure.logfiles.bitwiseor}")
-	private String seperator;
+	private String separator;
+	@Value("${com.mhcure.logfiles.decrypted.dateTime.format}")
+	private String decryptedDateTimeFormat;
+	@Value("${com.mhcure.logfiles.decrypted.dateTime.pattern}")
+	private String decryptedDateTimePattern;
+	@Value("${wcom.mhcure.logfiles.encryptionKey}")
+	private String encryptionKey;
+	@Value("${com.mhcure.logfiles.encryptedFileExtension}")
+	private String encryptFileExtension;
 
 	public List<String> getFilesList() {
 		List<String> fileList = new ArrayList<>();
 		File logFilesLocationFile = new File(logFilesLocation);
-		System.out.println(logfilelocation + logFilesLocation);
+		System.out.println(logFileLocation + logFilesLocation);
 		if (!logFilesLocationFile.exists()) {
-			MhFileAggregatoHelper.printInstructionsOnConsole(logFilesLocation + validlocation);
+			MhFileAggregatoHelper.printInstructionsOnConsole(logFilesLocation + validLocation);
 			return fileList;
 		}
 		String[] logFilesArray = logFilesLocationFile.list();
 		if (logFilesArray != null) {
 			fileList = Arrays.asList(logFilesArray);
 		} else {
-			System.out.println(nologfilesfound + logFilesLocation);
+			System.out.println(noLogFilesFound + logFilesLocation);
 
 		}
 		return fileList;
 	}
 
-	public Map<Long, String> readFileUsingBufferedReader(String fileName) throws IOException, ParseException {
+	public Map<Long, String> readFileUsingBufferedReader(String fileName) throws Exception {
 		Map<Long, String> fileContentsMap = new HashMap<>();
+		FileReader logFileReader = null;
+		File logFile = new File(logFilesLocation + backslash + fileName);
+		boolean isEncryptedFile = false;
+		Cipher cipherObject = null;
+		if(!logFile.isFile()) {
+			System.out.println(fileName + UserPromptConstants.PROMPT_MESSAGE_WHEN_FILE_IS_INVALID.getKey());
+			return fileContentsMap;
+		}
+		logFileReader = new FileReader(logFile);
+		if (MhFileAggregatoHelper.isFileEncrypted(fileName)) {
+			isEncryptedFile = true;
+			cipherObject = getCipherObject();
+			//logFileReader = new FileReader(decryptedFileLocation + backslash + fileName);
+		}
 		String dateTimeFormatInLogFile = getDateTimeFormatInLogFile(fileName);
 		String dateTimeRegexPatternInLogFile = getDateTimeRegexPatternInLogFile(fileName);
-
 		int logDateTimePatternLength = dateTimeFormatInLogFile.length();
 		Pattern logTypePattern = Pattern.compile(dateTimeRegexPatternInLogFile);
-		FileReader logFileReader = new FileReader(new File(logFilesLocation + backslash + fileName));
 		BufferedReader br = new BufferedReader(logFileReader);
 		int lineCounter = 0;
 		Long keyForPreviousLine = null;
 		for (String line; (line = br.readLine()) != null; ) {
+			if(isEncryptedFile) {
+				line = getDecryptedText(line, cipherObject);
+			}
 			Long keyForLine = null;
 			boolean lineAddedToMap = false;
-//				System.out.println(line);
-			String lineToBeInserted = fileName + seperator + line;
+			// System.out.println(line);
+			String lineToBeInserted = new StringTokenizer(fileName.replaceAll("_"," ")).nextToken() + separator + line;
 			if (line != null && line.length() > logDateTimePatternLength) {
 				String dateTimePart = line.substring(0, logDateTimePatternLength);
 
@@ -113,15 +139,15 @@ public class MhFileReader {
 					keyForLine = dateTimeInMilliSeconds;
 					if (fileContentsMap.get(keyForLine) != null) {
 						//Since timestamp can be duplicated in a same file
-						fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + newlinechar + lineToBeInserted);
+						fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + newLineChar + lineToBeInserted);
 					} else {
-						fileContentsMap.put(keyForLine, newlinechar + lineToBeInserted);
+						fileContentsMap.put(keyForLine,  lineToBeInserted);
 					}
 					lineAddedToMap = true;
 				}
 			}
 			//if line don't have datetimepart then append to prev line
-			if (lineAddedToMap == false &&
+			if (!lineAddedToMap &&
 					keyForPreviousLine != null &&
 					fileContentsMap.get(keyForPreviousLine) != null) {
 				fileContentsMap.put(keyForPreviousLine, fileContentsMap.get(keyForPreviousLine) + lineToBeInserted);
@@ -133,10 +159,38 @@ public class MhFileReader {
 			lineAddedToMap = false;
 			lineCounter++;
 		}
-		logFileReader.close();
+		if(logFileReader != null) {
+			logFileReader.close();
+		}
 		br.close();
 		return fileContentsMap;
 	}
+
+	public String getDecryptedText(String encryptedData, Cipher cipherObject) throws Exception {
+		byte[] decodedValue = (Base64.getDecoder().decode(encryptedData));
+		byte[] decryptedLine = cipherObject.doFinal(decodedValue);
+		return new String(decryptedLine);
+	}
+
+	private Cipher getCipherObject() throws Exception {
+		final byte[] encryptionKey = getEncryptionKey().getBytes();
+		final String ALGO = "AES";
+		Cipher cipherObject = null;
+		Key key = null;
+		if (key == null)
+			key = new SecretKeySpec(encryptionKey, "AES");
+		if (cipherObject == null) {
+			cipherObject = Cipher.getInstance("AES");
+			cipherObject.init(Cipher.DECRYPT_MODE, key);
+		}
+		return cipherObject;
+	}
+
+
+//    private Key generateKey() throws Exception {
+//        Key key = new SecretKeySpec(encryptionKey, "AES");
+//        return key;
+//    }
 
 	private long getTimeInMilliSeconds(String dateTimeText, String dateTimeFormatInLogFile) {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(dateTimeFormatInLogFile);
@@ -145,22 +199,28 @@ public class MhFileReader {
 	}
 
 	private String getDateTimeFormatInLogFile(String fileName) {
-		return switch (fileName) {
-			case "App" -> appLogDateTimeFormat;
-			case "SIP_" -> sipLogDateTimeFormat;
-			case "SIPIS_" -> sipisLogDateTimeFormat;
-			case "LOCALPUSH_" -> localPushLogDateTimeFormat;
-			default -> appLogDateTimeFormat;
-		};
+		if (fileName.startsWith(appFileType)) {
+			return fileName.endsWith(encryptFileExtension)?decryptedDateTimeFormat:appLogDateTimeFormat;
+		} else if (fileName.startsWith(sipFileType)) {
+			return sipLogDateTimeFormat;
+		} else if (fileName.startsWith(sipisFileType)) {
+			return sipisLogDateTimeFormat;
+		} else if (fileName.startsWith(localPushFileType)) {
+			return localPushLogDateTimeFormat;
+		}
+		return appLogDateTimeFormat;
 	}
 
 	private String getDateTimeRegexPatternInLogFile(String fileName) {
-		return switch (fileName) {
-			case "App" -> appLogDateTimePatternRegexText;
-			case "SIP_" -> sipLogDateTimePatternRegexText;
-			case "SIPIS_" -> sipsLogDateTimePatternRegexText;
-			case "LOCALPUSH_" -> localPushLogDateTimePatternRegexText;
-			default -> appLogDateTimePatternRegexText;
-		};
+		if (fileName.startsWith(appFileType)) {
+			return fileName.endsWith(encryptFileExtension)?decryptedDateTimePattern:appLogDateTimePatternRegexText;
+		} else if (fileName.startsWith(sipFileType)) {
+			return sipLogDateTimePatternRegexText;
+		} else if (fileName.startsWith(sipisFileType)) {
+			return sipsLogDateTimePatternRegexText;
+		} else if (fileName.startsWith(localPushFileType)) {
+			return localPushLogDateTimePatternRegexText;
+		}
+		return appLogDateTimePatternRegexText;
 	}
 }

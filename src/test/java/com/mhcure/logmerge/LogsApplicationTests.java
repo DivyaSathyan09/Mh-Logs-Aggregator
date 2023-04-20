@@ -1,4 +1,4 @@
-package com.example.logs;
+package com.mhcure.logmerge;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

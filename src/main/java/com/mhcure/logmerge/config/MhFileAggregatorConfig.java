@@ -1,7 +1,7 @@
-package com.example.logs.config;
+package com.mhcure.logmerge.config;
 
-import com.example.logs.filereader.MhFileReader;
-import com.example.logs.filewriter.MhFileWriter;
+import com.mhcure.logmerge.filereader.MhFileReader;
+import com.mhcure.logmerge.filewriter.MhFileWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

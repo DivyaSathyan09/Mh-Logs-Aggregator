@@ -1,4 +1,4 @@
-package com.example.logs.config;
+package com.mhcure.logmerge.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
