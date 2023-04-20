@@ -66,15 +66,4 @@ public class MhFileWriter {
 		writer.write(record);
 		long end = System.currentTimeMillis();
 	}
-
-	// Function to sort map by Key
-	public TreeMap<String, String> sortbykey(Map<String, String> fileContentsMap) {
-		// TreeMap to store values of HashMap
-		TreeMap<String, String> sortedTreeMapWithFileLines = new TreeMap<>();
-
-		// Copy all data from hashMap into TreeMap
-		sortedTreeMapWithFileLines.putAll(fileContentsMap);
-		return sortedTreeMapWithFileLines;
-
-	}
 }

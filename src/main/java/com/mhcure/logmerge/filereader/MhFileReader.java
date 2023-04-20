@@ -2,7 +2,7 @@ package com.mhcure.logmerge.filereader;
 
 import com.mhcure.logmerge.config.MhFileAggregatorProperties;
 import com.mhcure.logmerge.constants.UserPromptConstants;
-import com.mhcure.logmerge.helper.MhFileAggregatoHelper;
+import com.mhcure.logmerge.helper.MhFileAggregatorHelper;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,7 +85,7 @@ public class MhFileReader {
 		File logFilesLocationFile = new File(logFilesLocation);
 		System.out.println(logFileLocation + logFilesLocation);
 		if (!logFilesLocationFile.exists()) {
-			MhFileAggregatoHelper.printInstructionsOnConsole(logFilesLocation + validLocation);
+			MhFileAggregatorHelper.printInstructionsOnConsole(logFilesLocation + validLocation);
 			return fileList;
 		}
 		String[] logFilesArray = logFilesLocationFile.list();
@@ -109,7 +109,7 @@ public class MhFileReader {
 			return fileContentsMap;
 		}
 		logFileReader = new FileReader(logFile);
-		if (MhFileAggregatoHelper.isFileEncrypted(fileName)) {
+		if (MhFileAggregatorHelper.isFileEncrypted(fileName)) {
 			isEncryptedFile = true;
 			cipherObject = getCipherObject();
 			//logFileReader = new FileReader(decryptedFileLocation + backslash + fileName);
