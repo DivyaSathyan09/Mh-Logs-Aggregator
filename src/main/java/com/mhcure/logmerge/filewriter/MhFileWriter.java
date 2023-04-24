@@ -13,6 +13,7 @@ import java.util.TreeMap;
 
 @Data
 public class MhFileWriter {
+
     private static final double MEG = (Math.pow(1024, 2));
     @Value("${logfiles.location}")
     private String logFilesLocation;
@@ -40,9 +41,7 @@ public class MhFileWriter {
             countLines++;
         }
         bufferedWriter.close();
-
-       MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.WRITE_BUFFERED_SIZE.getKey()) + bufSize + ")... ");
-
+        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.WRITE_BUFFERED_SIZE.getKey()) + bufSize + ")... ");
     }
 
     public void writeToFile(String destinationFileName, Map<Long, String> singleFileContentsMap) throws IOException {

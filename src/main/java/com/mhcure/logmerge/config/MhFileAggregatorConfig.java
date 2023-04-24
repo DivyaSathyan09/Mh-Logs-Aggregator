@@ -12,6 +12,7 @@ public class MhFileAggregatorConfig {
     public MhFileReader getMhFileReader() {
         return new MhFileReader();
     }
+
     @Bean
     public MhFileWriter getMhFileWriter() {
         return new MhFileWriter();

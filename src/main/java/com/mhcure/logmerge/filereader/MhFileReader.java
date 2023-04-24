@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 @Data
 public class MhFileReader {
+
     @Autowired
     MhFileAggregatorProperties mhFileAggregatorProperties;
     @Value("${logfiles.location}")
@@ -65,7 +66,7 @@ public class MhFileReader {
     public List<String> getFilesList() {
         List<String> fileList = new ArrayList<>();
         File logFilesLocationFile = new File(logFilesLocation);
-       MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_LOG_FILES_LOCATION.getKey()) + logFilesLocation);
+        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_LOG_FILES_LOCATION.getKey()) + logFilesLocation);
         if (!logFilesLocationFile.exists()) {
             MhFileAggregatorHelper.printToConsole(logFilesLocation + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_INVALID_FILE_LOCATION.getKey()));
             return fileList;
@@ -74,7 +75,7 @@ public class MhFileReader {
         if (logFilesArray != null) {
             fileList = Arrays.asList(logFilesArray);
         } else {
-         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_NO_FILES_FOUND.getKey()) + logFilesLocation);
+            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_NO_FILES_FOUND.getKey()) + logFilesLocation);
 
         }
         return fileList;
