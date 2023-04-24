@@ -18,5 +18,5 @@ public class MhFileAggregatorProperties {
     private String mhFileAggregatorPropertiesLocation;
 
     @Value("${logfiles.location}")
-    private String logfileslocation;
+    private String logFilesLocation;
 }

@@ -2,7 +2,6 @@ package com.mhcure.logmerge.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
@@ -18,7 +17,7 @@ public class MhMessagePropertiesFileReader {
         try {
             moduleMessagesResourceBundle = ResourceBundle.getBundle(MESSAGE_PROPERTY_FILE_PREFIX);
         } catch (MissingResourceException missingResourceException) {
-           // log.error(missingResourceException.getMessage());
+            missingResourceException.printStackTrace();
         }
     }
 

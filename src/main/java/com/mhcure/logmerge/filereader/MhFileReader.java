@@ -25,34 +25,24 @@ import java.util.regex.Pattern;
 
 @Data
 public class MhFileReader {
-
     @Autowired
     MhFileAggregatorProperties mhFileAggregatorProperties;
-
     @Value("${logfiles.location}")
     private String logFilesLocation;
-
     @Value("${com.mhcure.logfiles.APP.log.dateTime.pattern}")
     private String appLogDateTimePatternRegexText;
-
     @Value("${com.mhcure.logfiles.APP.log.dateTime.format}")
     private String appLogDateTimeFormat;
-
     @Value("${com.mhcure.logfiles.SIP.log.dateTime.pattern}")
     private String sipLogDateTimePatternRegexText;
-
     @Value("${com.mhcure.logfiles.SIP.log.dateTime.format}")
     private String sipLogDateTimeFormat;
-
     @Value("${com.mhcure.logfiles.SIPIS.log.dateTime.pattern}")
     private String sipsLogDateTimePatternRegexText;
-
     @Value("${com.mhcure.logfiles.SIPIS.log.dateTime.format}")
     private String sipisLogDateTimeFormat;
-
     @Value("${com.mhcure.logfiles.LOCALPUSH.log.dateTime.pattern}")
     private String localPushLogDateTimePatternRegexText;
-
     @Value("${com.mhcure.logfiles.LOCALPUSH.log.dateTime.format}")
     private String localPushLogDateTimeFormat;
     @Value("${APP_files_prefix}")
@@ -75,16 +65,16 @@ public class MhFileReader {
     public List<String> getFilesList() {
         List<String> fileList = new ArrayList<>();
         File logFilesLocationFile = new File(logFilesLocation);
-        System.out.println(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_LOG_FILES_LOCATION.getKey()) + logFilesLocation);
+       MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_LOG_FILES_LOCATION.getKey()) + logFilesLocation);
         if (!logFilesLocationFile.exists()) {
-            MhFileAggregatorHelper.printInstructionsOnConsole(logFilesLocation + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_INVALID_FILE_LOCATION.getKey()));
+            MhFileAggregatorHelper.printToConsole(logFilesLocation + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_INVALID_FILE_LOCATION.getKey()));
             return fileList;
         }
         String[] logFilesArray = logFilesLocationFile.list();
         if (logFilesArray != null) {
             fileList = Arrays.asList(logFilesArray);
         } else {
-            System.out.println(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_NO_FILES_FOUND.getKey()) + logFilesLocation);
+         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_NO_FILES_FOUND.getKey()) + logFilesLocation);
 
         }
         return fileList;
@@ -93,7 +83,7 @@ public class MhFileReader {
     public Map<Long, String> readFileUsingBufferedReader(String fileName) throws Exception {
         Map<Long, String> fileContentsMap = new HashMap<>();
         FileReader logFileReader = null;
-        File logFile = new File(logFilesLocation + MhFileConstants.BACKSLASH.getKey() + fileName);
+        File logFile = new File(logFilesLocation + MhFileConstants.BACKSLASH + fileName);
         boolean isEncryptedFile = false;
         Cipher cipherObject = null;
         if (!logFile.isFile()) {
@@ -119,8 +109,7 @@ public class MhFileReader {
             }
             Long keyForLine = null;
             boolean lineAddedToMap = false;
-            // System.out.println(line);
-            String lineToBeInserted = new StringTokenizer(fileName.replaceAll("_", " ")).nextToken() + MhFileConstants.FILENAME_LOGS_TMT_SEPARATOR.getKey() + line;
+            String lineToBeInserted = new StringTokenizer(fileName.replaceAll("_", " ")).nextToken() + MhFileConstants.FILENAME_LOGS_TMT_SEPARATOR + line;
             if (line != null && line.length() > logDateTimePatternLength) {
                 String dateTimePart = line.substring(0, logDateTimePatternLength);
 
@@ -131,7 +120,7 @@ public class MhFileReader {
                     keyForLine = dateTimeInMilliSeconds;
                     if (fileContentsMap.get(keyForLine) != null) {
                         //Since timestamp can be duplicated in a same file
-                        fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + MhFileConstants.NEW_LINE_CHAR.getKey() + lineToBeInserted);
+                        fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + MhFileConstants.NEW_LINE_CHAR + lineToBeInserted);
                     } else {
                         fileContentsMap.put(keyForLine, lineToBeInserted);
                     }
@@ -139,9 +128,7 @@ public class MhFileReader {
                 }
             }
             //if line don't have datetimepart then append to prev line
-            if (!lineAddedToMap &&
-                    keyForPreviousLine != null &&
-                    fileContentsMap.get(keyForPreviousLine) != null) {
+            if (!lineAddedToMap && keyForPreviousLine != null && fileContentsMap.get(keyForPreviousLine) != null) {
                 fileContentsMap.put(keyForPreviousLine, fileContentsMap.get(keyForPreviousLine) + lineToBeInserted);
             }
 
@@ -169,20 +156,13 @@ public class MhFileReader {
         final String ALGO = "AES";
         Cipher cipherObject = null;
         Key key = null;
-        if (key == null)
-            key = new SecretKeySpec(encryptionKey, "AES");
+        if (key == null) key = new SecretKeySpec(encryptionKey, "AES");
         if (cipherObject == null) {
             cipherObject = Cipher.getInstance("AES");
             cipherObject.init(Cipher.DECRYPT_MODE, key);
         }
         return cipherObject;
     }
-
-
-//    private Key generateKey() throws Exception {
-//        Key key = new SecretKeySpec(encryptionKey, "AES");
-//        return key;
-//    }
 
     private long getTimeInMilliSeconds(String dateTimeText, String dateTimeFormatInLogFile) {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(dateTimeFormatInLogFile);

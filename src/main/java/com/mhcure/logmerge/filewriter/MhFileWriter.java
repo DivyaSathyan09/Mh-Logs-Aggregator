@@ -1,6 +1,7 @@
 package com.mhcure.logmerge.filewriter;
 
 import com.mhcure.logmerge.constants.MhFileConstants;
+import com.mhcure.logmerge.helper.MhFileAggregatorHelper;
 import com.mhcure.logmerge.utils.MhMessagePropertiesFileReader;
 import com.mhcure.logmerge.utils.MhMessageKeyEnum;
 import lombok.Data;
@@ -12,7 +13,6 @@ import java.util.TreeMap;
 
 @Data
 public class MhFileWriter {
-
     private static final double MEG = (Math.pow(1024, 2));
     @Value("${logfiles.location}")
     private String logFilesLocation;
@@ -30,27 +30,24 @@ public class MhFileWriter {
     public void writeToFile(TreeMap<Long, String> fileContentsTreeMap) throws IOException {
         int bufSize = 4 * (int) MEG;
         double countLines = 0;
-        File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH.getKey() + logFilesOutPutName);
+        File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName);
         // Display the TreeMap which is naturally sorted
         TreeMap<Long, String> sortedTreeMapWithFileLines = fileContentsTreeMap;
         FileWriter writer = new FileWriter(file);
         BufferedWriter bufferedWriter = new BufferedWriter(writer, bufSize);
         for (Map.Entry<Long, String> entry : sortedTreeMapWithFileLines.entrySet()) {
-//            if(countLines > 10.0){
-//                bufferedWriter = new BufferedWriter(new FileWriter(logFilesOutPutLocation + MhFileConstants.BACKSLASH.getKey() + "newOutPutFile"), bufSize);
-//            }
             writeLineToFile(entry.getValue(), bufferedWriter);
             countLines++;
         }
         bufferedWriter.close();
 
-        System.out.println(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.WRITE_BUFFERED_SIZE.getKey()) + bufSize + ")... ");
+       MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.WRITE_BUFFERED_SIZE.getKey()) + bufSize + ")... ");
 
     }
 
     public void writeToFile(String destinationFileName, Map<Long, String> singleFileContentsMap) throws IOException {
         int bufSize = 4 * (int) MEG;
-        File file = new File(decryptedFileLocation + MhFileConstants.BACKSLASH.getKey() + destinationFileName);
+        File file = new File(decryptedFileLocation + MhFileConstants.BACKSLASH + destinationFileName);
         FileWriter writer = new FileWriter(file);
         BufferedWriter bufferedWriter = new BufferedWriter(writer, bufSize);
         for (Map.Entry<Long, String> entry : singleFileContentsMap.entrySet()) {
