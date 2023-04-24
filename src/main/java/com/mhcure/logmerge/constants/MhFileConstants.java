@@ -8,7 +8,6 @@ public enum MhFileConstants {
     NEW_LINE_CHAR("\n"),
     FILENAME_LOGS_TMT_SEPARATOR("|"),
     LINE_SEPARATOR("----------------------****************----------------------------------");
-    ;
     private final String key;
 
     MhFileConstants(String key) {

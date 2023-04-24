@@ -8,7 +8,6 @@ import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MhMessagePropertiesFileReader {
     private static final String MESSAGE_PROPERTY_FILE_PREFIX = "messages";
@@ -19,7 +18,7 @@ public class MhMessagePropertiesFileReader {
         try {
             moduleMessagesResourceBundle = ResourceBundle.getBundle(MESSAGE_PROPERTY_FILE_PREFIX);
         } catch (MissingResourceException missingResourceException) {
-            log.error(missingResourceException.getMessage());
+           // log.error(missingResourceException.getMessage());
         }
     }
 
@@ -40,7 +39,7 @@ public class MhMessagePropertiesFileReader {
             return MessageFormat.format(error, arguments);
         }
 
-        log.debug("Key not found in ResourceBundle. baseName={}", resourceBundle.getBaseBundleName());
+       // log.debug("Key not found in ResourceBundle. baseName={}", resourceBundle.getBaseBundleName());
         return key;
     }
 }

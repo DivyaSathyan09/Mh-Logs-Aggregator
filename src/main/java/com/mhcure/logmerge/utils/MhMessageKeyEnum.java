@@ -18,7 +18,6 @@ public enum MhMessageKeyEnum {
     MESSAGE_PROCESSING_FILE("com.mhcure.userInfo.message.processingfiles"),
 
     MESSAGE_FINISHED_MERGING("com.mhcure.userInfo.message.mergingfiles"),
-
     TEXT_FILES("com.mhcure.userInfo.message.files"),
 
     MESSAGE_LOG_FILES_LOCATION("com.mhcure.userPrompt.message.locationis"),
