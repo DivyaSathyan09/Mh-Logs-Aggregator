@@ -36,18 +36,28 @@ public class MhFileWriter {
         // Display the TreeMap which is naturally sorted
         TreeMap<Long, String> sortedTreeMapWithFileLines = fileContentsTreeMap;
         Scanner inputToSaveMultipleFiles = new Scanner(System.in);
+        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
+        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         String keyToSaveMultipleFiles = inputToSaveMultipleFiles.next();
         if (keyToSaveMultipleFiles.equalsIgnoreCase("x")) {
-            saveInMultipleFiles(sortedTreeMapWithFileLines, bufSize);
+            saveInSingleFile(sortedTreeMapWithFileLines, bufSize);
             return;
         }
         while (!keyToSaveMultipleFiles.equalsIgnoreCase("y") && !keyToSaveMultipleFiles.equalsIgnoreCase("X")) {
+            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.INVALID_ENTRY_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
+            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
             keyToSaveMultipleFiles = new Scanner(System.in).next();
         }
-        MhFileAggregatorHelper.printToConsole("Specify total number of lines you want in each file");
+        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
+        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_MAXIMUM_LINES_IN_LOG_FILE.getKey()));
+        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         int totalNumberOfLinesOfLogFile = inputToSaveMultipleFiles.nextInt();
+        if(totalNumberOfLinesOfLogFile <= 1){
+            saveInSingleFile(sortedTreeMapWithFileLines, bufSize);
+            return;
+        }
         File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName);
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
         for (Map.Entry<Long, String> entry : sortedTreeMapWithFileLines.entrySet()) {
@@ -60,10 +70,11 @@ public class MhFileWriter {
 
         }
         bufferedWriter.close();
+        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.WRITE_BUFFERED_SIZE.getKey()) + bufSize + ")... ");
     }
 
-    private void saveInMultipleFiles(TreeMap<Long, String> sortedTreeMapWithFileLines, int bufSize) throws IOException {
+    private void saveInSingleFile(TreeMap<Long, String> sortedTreeMapWithFileLines, int bufSize) throws IOException {
         File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName);
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
         for (Map.Entry<Long, String> entry : sortedTreeMapWithFileLines.entrySet()) {

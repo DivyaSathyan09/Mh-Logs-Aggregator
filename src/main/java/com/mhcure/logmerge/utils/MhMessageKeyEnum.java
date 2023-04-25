@@ -17,10 +17,12 @@ public enum MhMessageKeyEnum {
     TOTAL_TIME_TO_WRITE_FILES("com.mhcure.userInfo.message.totalTime.to.writeFiles"),
     MESSAGE_TO_SAVE_DECRYPTED_FILES("com.mhcure.logfiles.ask_to_save.decrypted.files"),
     MESSAGE_TOTAL_TIME_TO_RUN_PROGRAM("com.mhcure.userInfo.message.totalTime.to.runProgram"),
-    INVALID_INPUT_TO_CONTINUE_MERGING_LOG_FILE("com.mhcure.logfiles.invalid.entry_to_continue_merging_log.files"),
+    ASK_TO_SAVE_LOGS_IN_MULTIPLE_FILES("com.mhcure.logfiles.ask_to_save_logs_in_multiple_files"),
     INVALID_INPUT_TO_SAVE_DECRYPTED_FILE("com.mhcure.logfiles.invalid.entry_to_save_decrypted.files"),
-    INVALID_ENTRY_TO_SAVE_LOGS_IN_MULTIPLE_FILES("com.mhcure.logfiles.invalid.entry_ask_to_save_logs_in_multiple_files"),
-    ASK_TO_SAVE_LOGS_IN_MULTIPLE_FILES("com.mhcure.logfiles.ask_to_save_logs_in_multiple_files");
+    INVALID_INPUT_TO_CONTINUE_MERGING_LOG_FILE("com.mhcure.logfiles.invalid.entry_to_continue_merging_log.files"),
+    ASK_MAXIMUM_LINES_IN_LOG_FILE("com.mhcure.userPrompt.message.ask_total_maximum_number_of_lines_in_each_log_file"),
+    INVALID_ENTRY_TO_SAVE_LOGS_IN_MULTIPLE_FILES("com.mhcure.logfiles.invalid.entry_ask_to_save_logs_in_multiple_files");
+
     private final String key;
 
     MhMessageKeyEnum(String key) {
