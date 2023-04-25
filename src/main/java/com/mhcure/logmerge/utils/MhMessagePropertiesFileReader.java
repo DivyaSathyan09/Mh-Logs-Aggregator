@@ -11,7 +11,6 @@ import java.util.ResourceBundle;
 public class MhMessagePropertiesFileReader {
     private static final String MESSAGE_PROPERTY_FILE_PREFIX = "messages";
     private static ResourceBundle moduleMessagesResourceBundle;
-
     static {
         try {
             moduleMessagesResourceBundle = ResourceBundle.getBundle(MESSAGE_PROPERTY_FILE_PREFIX);

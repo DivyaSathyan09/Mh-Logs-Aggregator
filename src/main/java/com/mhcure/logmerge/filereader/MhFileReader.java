@@ -28,38 +28,55 @@ public class MhFileReader {
 
     @Autowired
     MhFileAggregatorProperties mhFileAggregatorProperties;
+
     @Value("${logfiles.location}")
     private String logFilesLocation;
+
     @Value("${com.mhcure.logfiles.APP.log.dateTime.pattern}")
     private String appLogDateTimePatternRegexText;
+
     @Value("${com.mhcure.logfiles.APP.log.dateTime.format}")
     private String appLogDateTimeFormat;
+
     @Value("${com.mhcure.logfiles.SIP.log.dateTime.pattern}")
     private String sipLogDateTimePatternRegexText;
+
     @Value("${com.mhcure.logfiles.SIP.log.dateTime.format}")
     private String sipLogDateTimeFormat;
+
     @Value("${com.mhcure.logfiles.SIPIS.log.dateTime.pattern}")
     private String sipsLogDateTimePatternRegexText;
+
     @Value("${com.mhcure.logfiles.SIPIS.log.dateTime.format}")
     private String sipisLogDateTimeFormat;
+
     @Value("${com.mhcure.logfiles.LOCALPUSH.log.dateTime.pattern}")
     private String localPushLogDateTimePatternRegexText;
+
     @Value("${com.mhcure.logfiles.LOCALPUSH.log.dateTime.format}")
     private String localPushLogDateTimeFormat;
+
     @Value("${APP_files_prefix}")
     private String appFilePrefix;
+
     @Value("${SIP_files_prefix}")
     private String sipFilePrefix;
+
     @Value("${SIPIS_files_prefix}")
     private String sipisFilePrefix;
+    
     @Value("${LOCALPUSH_files_prefix}")
     private String localPushFilePrefix;
+
     @Value("${com.mhcure.logfiles.decrypted.dateTime.format}")
     private String decryptedDateTimeFormat;
+
     @Value("${com.mhcure.logfiles.decrypted.dateTime.pattern}")
     private String decryptedDateTimePattern;
+
     @Value("${logfiles.encryptionKey}")
     private String encryptionKey;
+
     @Value("${com.mhcure.logfiles.encryptedFileExtension}")
     private String encryptFileExtension;
 

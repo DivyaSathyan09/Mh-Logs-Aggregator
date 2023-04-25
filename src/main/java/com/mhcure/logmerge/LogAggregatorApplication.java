@@ -29,14 +29,19 @@ public class LogAggregatorApplication {
 
     @Autowired
     MhFileAggregatorProperties mhFileAggregatorProperties;
+
     @Autowired
     private MhFileReader mhFileReader;
+
     @Autowired
     private MhFileWriter mhFileWriter;
+
     @Value("${com.mhcure.logfiles.mergefiles_yes_value}")
     private String mergeFilesYes;
+
     @Value("${com.mhcure.logfiles.toExit}")
     private String exitApplicationYes;
+
     private String keyToSaveDecryptedFiles;
 
     public static void main(String[] args) {
