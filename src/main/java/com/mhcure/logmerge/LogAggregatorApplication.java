@@ -60,12 +60,11 @@ public class LogAggregatorApplication {
         long programStartTime;
 
         String userInput = "";
+        MhFileAggregatorHelper.printInstructionsOnConsole(MhFileConstants.NEW_LINE_CHAR);
         do {
-            MhFileAggregatorHelper.printInstructionsOnConsole(MhFileConstants.NEW_LINE_CHAR);
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
-                    MESSAGE_SPECIFIED_FOLDER.getKey()) + mhFileReader.getMhFileAggregatorProperties().
-                    getLogFilesLocation() + MhFileConstants.NEW_LINE_CHAR + MhMessagePropertiesFileReader.
-                    getMessage(MhMessageKeyEnum.CORRECT_FOLDER_VALUE.getKey()));
+                    MESSAGE_SPECIFIED_FOLDER.getKey()).replace("logFolderLocation", mhFileReader.getLogFilesLocation()));
+            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
             Scanner in = new Scanner(System.in);
             userInput = in.nextLine();
             programStartTime = System.currentTimeMillis();
@@ -73,18 +72,17 @@ public class LogAggregatorApplication {
                 performLogAggregation();
             } else {
                 if (!userInput.equalsIgnoreCase(mergeFilesYes) && !userInput.equalsIgnoreCase(exitApplicationYes)) {
-                    MhFileAggregatorHelper.printInstructionsOnConsole(MhMessagePropertiesFileReader.
-                            getMessage(MhMessageKeyEnum.MESSAGE_FOR_INVALID_ENTRY.getKey()) + MhMessagePropertiesFileReader
-                            .getMessage(MhMessageKeyEnum.INVALID_INPUT_TO_SAVE_DECRYPTED_FILE.getKey()));
+                    MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
+                    MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader
+                            .getMessage(MhMessageKeyEnum.INVALID_INPUT_TO_CONTINUE_MERGING_LOG_FILE.getKey()));
                 }
             }
-            long programEndTime = System.currentTimeMillis();
-            double programTimeInseconds = getTimeDiffInSeconds(programEndTime, programStartTime);
-
-            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
-                    MESSAGE_TOTAL_TIME_TO_RUN_PROGRAM.getKey()) + programTimeInseconds);
         } while (!userInput.equalsIgnoreCase(exitApplicationYes) && !userInput.equalsIgnoreCase(mergeFilesYes));
+        long programEndTime = System.currentTimeMillis();
+        double programTimeInseconds = getTimeDiffInSeconds(programEndTime, programStartTime);
 
+        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
+                MESSAGE_TOTAL_TIME_TO_RUN_PROGRAM.getKey()) + programTimeInseconds);
         return args -> {
         };
     }
@@ -96,19 +94,19 @@ public class LogAggregatorApplication {
         Map<Long, String> fileContentsMap = new HashMap<>();
         TreeMap<Long, String> fileContentsTreeMap = new TreeMap<>();
         int totalFilesCount = logFilesPathList.size();
-
         String outputFileName = mhFileWriter.getLogFilesOutPutName();
         if (totalFilesCount > 0) {
-            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.TOTAL_FILES_FOUND.getKey())
-                    + totalFilesCount + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum
-                    .MESSAGE_FILES_TO_BE_MERGED.getKey()));
+            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.TOTAL_FILES_FOUND.getKey()).replace("totalFiles", "" + totalFilesCount));
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
                     MESSAGE_TO_SAVE_DECRYPTED_FILES.getKey()));
+            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
             keyToSaveDecryptedFiles = new Scanner(System.in).next();
             while (!keyToSaveDecryptedFiles.equalsIgnoreCase(mergeFilesYes) && !keyToSaveDecryptedFiles.
                     equalsIgnoreCase(exitApplicationYes)) {
+                MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
                 MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
                         INVALID_INPUT_TO_SAVE_DECRYPTED_FILE.getKey()));
+                MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
                 keyToSaveDecryptedFiles = new Scanner(System.in).next();
             }
             int fileCounter = 0;
@@ -130,9 +128,7 @@ public class LogAggregatorApplication {
                     MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.IGNORE_MERGING.getKey()));
                 }
                 MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_PROCESSING_FILE
-                        .getKey()) + fileCounter + MhFileConstants.BACKSLASH + totalFilesCount +
-                        MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.TEXT_FILES.getKey()));
-
+                        .getKey()).replace("totalNumberOf", "" + fileCounter).replace("totalfiles", "" + totalFilesCount));
                 //Write Decrypted File
                 if (MhFileAggregatorHelper.isFileEncrypted(logFileName)) {
                     String destinationFileName = logFileName.substring(0, logFileName.lastIndexOf("."));
@@ -154,10 +150,8 @@ public class LogAggregatorApplication {
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.TOTAL_TIME_TO_WRITE_FILES.
                 getKey()) + fileWriteTimeInSeconds);
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
-        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_FINISHED_MERGING.getKey())
-                + totalFilesCount + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MERGED_FILE_LOCATION.getKey())
-                + mhFileWriter.getLogFilesOutPutLocation() + MhFileConstants.BACKSLASH +
-                mhFileWriter.getLogFilesOutPutLocation());
+        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_FINISHED_MERGING.getKey()).replace("totalFiles", "" + totalFilesCount)
+                .replace("mergedFileLocation", mhFileWriter.getLogFilesOutPutLocation() + MhFileConstants.BACKSLASH + mhFileWriter.getLogFilesOutPutName()));
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
     }

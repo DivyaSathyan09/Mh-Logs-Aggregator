@@ -38,8 +38,8 @@ public class MhFileWriter {
         Scanner inputToSaveMultipleFiles = new Scanner(System.in);
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
         String keyToSaveMultipleFiles = inputToSaveMultipleFiles.next();
-        if (keyToSaveMultipleFiles.equalsIgnoreCase("x")){
-            saveInMultipleFiles(sortedTreeMapWithFileLines,bufSize);
+        if (keyToSaveMultipleFiles.equalsIgnoreCase("x")) {
+            saveInMultipleFiles(sortedTreeMapWithFileLines, bufSize);
             return;
         }
         while (!keyToSaveMultipleFiles.equalsIgnoreCase("y") && !keyToSaveMultipleFiles.equalsIgnoreCase("X")) {
@@ -51,12 +51,12 @@ public class MhFileWriter {
         File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName);
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
         for (Map.Entry<Long, String> entry : sortedTreeMapWithFileLines.entrySet()) {
-            if (countLines > totalNumberOfLinesOfLogFile){
+            if (countLines > totalNumberOfLinesOfLogFile) {
                 bufferedWriter = createNewFile();
                 countLines = 0;
             }
-                writeLineToFile(entry.getValue(), bufferedWriter);
-                countLines++;
+            writeLineToFile(entry.getValue(), bufferedWriter);
+            countLines++;
 
         }
         bufferedWriter.close();
@@ -94,7 +94,8 @@ public class MhFileWriter {
 
     private BufferedWriter createNewFile() throws IOException {
         fileCounter++;
-        File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName+fileCounter);
+        File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName + fileCounter);
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
-      return  bufferedWriter;
-}}
+        return bufferedWriter;
+    }
+}
