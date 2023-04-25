@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.TreeMap;
 
 @Data
@@ -27,24 +28,54 @@ public class MhFileWriter {
     private String appLOgDateTimeFormat;
     @Value("${generated_decrypted.files_location}")
     private String decryptedFileLocation;
+    private int fileCounter;
 
     public void writeToFile(TreeMap<Long, String> fileContentsTreeMap) throws IOException {
         int bufSize = 4 * (int) MEG;
         double countLines = 0;
-        File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName);
         // Display the TreeMap which is naturally sorted
         TreeMap<Long, String> sortedTreeMapWithFileLines = fileContentsTreeMap;
-        FileWriter writer = new FileWriter(file);
-        BufferedWriter bufferedWriter = new BufferedWriter(writer, bufSize);
+        Scanner inputToSaveMultipleFiles = new Scanner(System.in);
+        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
+        String keyToSaveMultipleFiles = inputToSaveMultipleFiles.next();
+        if (keyToSaveMultipleFiles.equalsIgnoreCase("x")){
+            saveInMultipleFiles(sortedTreeMapWithFileLines,bufSize);
+            return;
+        }
+        while (!keyToSaveMultipleFiles.equalsIgnoreCase("y") && !keyToSaveMultipleFiles.equalsIgnoreCase("X")) {
+            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.INVALID_ENTRY_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
+            keyToSaveMultipleFiles = new Scanner(System.in).next();
+        }
+        MhFileAggregatorHelper.printToConsole("Specify total number of lines you want in each file");
+        int totalNumberOfLinesOfLogFile = inputToSaveMultipleFiles.nextInt();
+        File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName);
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
         for (Map.Entry<Long, String> entry : sortedTreeMapWithFileLines.entrySet()) {
-            writeLineToFile(entry.getValue(), bufferedWriter);
-            countLines++;
+            if (countLines > totalNumberOfLinesOfLogFile){
+                bufferedWriter = createNewFile();
+                countLines = 0;
+            }
+                writeLineToFile(entry.getValue(), bufferedWriter);
+                countLines++;
+
         }
         bufferedWriter.close();
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.WRITE_BUFFERED_SIZE.getKey()) + bufSize + ")... ");
     }
 
-    public void writeToFile(String destinationFileName, Map<Long, String> singleFileContentsMap) throws IOException {
+    private void saveInMultipleFiles(TreeMap<Long, String> sortedTreeMapWithFileLines, int bufSize) throws IOException {
+        File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName);
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+        for (Map.Entry<Long, String> entry : sortedTreeMapWithFileLines.entrySet()) {
+            writeLineToFile(entry.getValue(), bufferedWriter);
+        }
+        bufferedWriter.close();
+
+        System.out.println(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.WRITE_BUFFERED_SIZE.getKey()) + bufSize + ")... ");
+
+    }
+
+    public void writeDecryptedFile(String destinationFileName, Map<Long, String> singleFileContentsMap) throws IOException {
         int bufSize = 4 * (int) MEG;
         File file = new File(decryptedFileLocation + MhFileConstants.BACKSLASH + destinationFileName);
         FileWriter writer = new FileWriter(file);
@@ -60,4 +91,10 @@ public class MhFileWriter {
         writer.write(record);
         long end = System.currentTimeMillis();
     }
-}
+
+    private BufferedWriter createNewFile() throws IOException {
+        fileCounter++;
+        File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName+fileCounter);
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+      return  bufferedWriter;
+}}

@@ -26,6 +26,7 @@ import java.util.*;
  */
 @SpringBootApplication
 public class LogAggregatorApplication {
+
     @Autowired
     MhFileAggregatorProperties mhFileAggregatorProperties;
     @Autowired
@@ -89,11 +90,13 @@ public class LogAggregatorApplication {
     }
 
     private void performLogAggregation() throws ParseException, IOException {
+
         long programStartTime = System.currentTimeMillis();
         List<String> logFilesPathList = mhFileReader.getFilesList();
         Map<Long, String> fileContentsMap = new HashMap<>();
         TreeMap<Long, String> fileContentsTreeMap = new TreeMap<>();
         int totalFilesCount = logFilesPathList.size();
+
         String outputFileName = mhFileWriter.getLogFilesOutPutName();
         if (totalFilesCount > 0) {
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.TOTAL_FILES_FOUND.getKey())
@@ -134,7 +137,7 @@ public class LogAggregatorApplication {
                 if (MhFileAggregatorHelper.isFileEncrypted(logFileName)) {
                     String destinationFileName = logFileName.substring(0, logFileName.lastIndexOf("."));
                     if (keyToSaveDecryptedFiles.equalsIgnoreCase(mergeFilesYes)) {
-                        mhFileWriter.writeToFile(destinationFileName, singleFileContentsMap);
+                        mhFileWriter.writeDecryptedFile(destinationFileName, singleFileContentsMap);
                     }
                 }
             }

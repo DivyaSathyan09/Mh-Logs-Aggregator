@@ -24,7 +24,9 @@ public enum MhMessageKeyEnum {
     MESSAGE_TO_IGNORE_OUTPUT_FILES("com.mhcure.userInfo.message.ignore_outputfiles"),
     MESSAGE_TO_SAVE_DECRYPTED_FILES("com.mhcure.logfiles.ask_to_save.decrypted.files"),
     MESSAGE_TOTAL_TIME_TO_RUN_PROGRAM("com.mhcure.userInfo.message.totaltime.to.runprogram"),
-    INVALID_INPUT_TO_SAVE_DECRYPTED_FILE("com.mhcure.logfiles.invalid.entry_to_save_decrypted.files");
+    INVALID_INPUT_TO_SAVE_DECRYPTED_FILE("com.mhcure.logfiles.invalid.entry_to_save_decrypted.files"),
+    INVALID_ENTRY_TO_SAVE_LOGS_IN_MULTIPLE_FILES("com.mhcure.logfiles.invalid.entry_ask_to_save_logs_in_multiple_files"),
+    ASK_TO_SAVE_LOGS_IN_MULTIPLE_FILES("com.mhcure.logfiles.ask_to_save_logs_in_multiple_files");
     private final String key;
 
     MhMessageKeyEnum(String key) {
