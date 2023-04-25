@@ -7,14 +7,13 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MhFileAggregatorConfig {
-	
-	@Bean
-	public MhFileReader getMhFileReader() {
-		return new MhFileReader();
-	}
+    @Bean
+    public MhFileReader getMhFileReader() {
+        return new MhFileReader();
+    }
 
-	@Bean
-	public MhFileWriter getMhFileWriter() {
-		return new MhFileWriter();
-	}
+    @Bean
+    public MhFileWriter getMhFileWriter() {
+        return new MhFileWriter();
+    }
 }
