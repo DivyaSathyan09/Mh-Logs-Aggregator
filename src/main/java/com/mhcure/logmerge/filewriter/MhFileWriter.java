@@ -18,16 +18,22 @@ public class MhFileWriter {
     private static final double MEG = (Math.pow(1024, 2));
     @Value("${logfiles.location}")
     private String logFilesLocation;
+
     @Value("${logfiles.output.location}")
     private String logFilesOutPutLocation;
+
     @Value("${logfiles.output.filename}")
     private String logFilesOutPutName;
+
     @Value("${com.mhcure.logfiles.APP.log.dateTime.pattern}")
     private String appLogDateTimePatternRegex;
+
     @Value("${com.mhcure.logfiles.APP.log.dateTime.format}")
     private String appLOgDateTimeFormat;
+
     @Value("${generated_decrypted.files_location}")
     private String decryptedFileLocation;
+
     private int fileCounter;
 
     public void writeToFile(TreeMap<Long, String> fileContentsTreeMap) throws IOException {

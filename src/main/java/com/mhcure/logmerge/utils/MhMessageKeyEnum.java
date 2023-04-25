@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum MhMessageKeyEnum {
+
     IGNORE_MERGING("com.mhcure.logfiles.ignore_merging"),
     TOTAL_FILES_FOUND("com.mhcure.userInfo.message.totalFiles"),
     WRITE_BUFFERED_SIZE("com.mhcure.userInfo.message.bufferSize"),
