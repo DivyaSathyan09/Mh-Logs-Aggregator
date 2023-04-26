@@ -47,7 +47,7 @@ public class MhFileWriter {
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         String keyToSaveMultipleFiles = inputToSaveMultipleFiles.next();
-        if (keyToSaveMultipleFiles.equalsIgnoreCase("x")) {
+        if (isValueNoToSplitFile(keyToSaveMultipleFiles)) {
             saveInSingleFile(sortedTreeMapWithFileLines, bufSize);
             return;
         }
@@ -115,5 +115,9 @@ public class MhFileWriter {
         File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName + fileCounter);
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
         return bufferedWriter;
+    }
+
+    private boolean isValueNoToSplitFile(String userPermission){
+        return userPermission.equalsIgnoreCase("X");
     }
 }

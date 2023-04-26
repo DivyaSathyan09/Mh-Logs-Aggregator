@@ -103,19 +103,18 @@ public class MhFileReader {
 
     public Map<Long, String> readFileUsingBufferedReader(String fileName) throws Exception {
         Map<Long, String> fileContentsMap = new HashMap<>();
-        FileReader logFileReader = null;
+        FileReader logFileReader ;
         File logFile = new File(logFilesLocation + MhFileConstants.BACKSLASH + fileName);
         boolean isEncryptedFile = false;
         Cipher cipherObject = null;
         if (!logFile.isFile()) {
-            System.out.println(fileName + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.INVALID_INPUT_TO_SAVE_DECRYPTED_FILE.getKey()));
+            System.out.println(fileName + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.IGNORE_INVALID_FILE.getKey()));
             return fileContentsMap;
         }
         logFileReader = new FileReader(logFile);
         if (MhFileAggregatorHelper.isFileEncrypted(fileName)) {
             isEncryptedFile = true;
             cipherObject = getCipherObject();
-            //logFileReader = new FileReader(decryptedFileLocation + backslash + fileName);
         }
         String dateTimeFormatInLogFile = getDateTimeFormatInLogFile(fileName);
         String dateTimeRegexPatternInLogFile = getDateTimeRegexPatternInLogFile(fileName);
@@ -137,7 +136,6 @@ public class MhFileReader {
 
                 Matcher appLogTypeMatcher = logTypePattern.matcher(dateTimePart);
                 if (appLogTypeMatcher.find()) {
-                    boolean lineStartsWithDatePattern = appLogTypeMatcher.start() == 0;
                     long dateTimeInMilliSeconds = getTimeInMilliSeconds(dateTimePart, dateTimeFormatInLogFile);
                     keyForLine = dateTimeInMilliSeconds;
                     if (fileContentsMap.get(keyForLine) != null) {
@@ -158,7 +156,6 @@ public class MhFileReader {
             if (keyForLine != null) {
                 keyForPreviousLine = keyForLine;
             }
-            lineAddedToMap = false;
             lineCounter++;
         }
         if (logFileReader != null) {

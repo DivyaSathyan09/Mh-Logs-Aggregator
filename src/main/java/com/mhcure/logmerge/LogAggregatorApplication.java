@@ -42,8 +42,6 @@ public class LogAggregatorApplication {
     @Value("${com.mhcure.logfiles.toExit}")
     private String exitApplicationYes;
 
-    private String userInputToSaveDecryptedFiles;
-
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(LogAggregatorApplication.class, args);
         exitApplication(ctx);
@@ -63,7 +61,6 @@ public class LogAggregatorApplication {
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) throws ParseException, IOException {
         long programStartTime;
-
         String userInput = "";
         MhFileAggregatorHelper.printInstructionsOnConsole(MhFileConstants.NEW_LINE_CHAR);
         do {
@@ -73,7 +70,7 @@ public class LogAggregatorApplication {
             Scanner in = new Scanner(System.in);
             userInput = in.nextLine();
             programStartTime = System.currentTimeMillis();
-            if (userInput.equalsIgnoreCase(mergeFilesYes)) {
+            if (isValueYes(userInput)) {
                 performLogAggregation();
             } else {
                 if (!userInput.equalsIgnoreCase(mergeFilesYes) && !userInput.equalsIgnoreCase(exitApplicationYes)) {
@@ -92,9 +89,7 @@ public class LogAggregatorApplication {
         };
     }
 
-    private void performLogAggregation() throws ParseException, IOException {
-
-        long programStartTime = System.currentTimeMillis();
+    private void performLogAggregation() throws IOException {
         List<String> logFilesPathList = mhFileReader.getFilesList();
         Map<Long, String> fileContentsMap = new HashMap<>();
         TreeMap<Long, String> fileContentsTreeMap = new TreeMap<>();
@@ -105,7 +100,7 @@ public class LogAggregatorApplication {
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
                     MESSAGE_TO_SAVE_DECRYPTED_FILES.getKey()));
             MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-            userInputToSaveDecryptedFiles = new Scanner(System.in).next();
+            String userInputToSaveDecryptedFiles = new Scanner(System.in).next();
             while (!userInputToSaveDecryptedFiles.equalsIgnoreCase(mergeFilesYes) && !userInputToSaveDecryptedFiles.
                     equalsIgnoreCase(exitApplicationYes)) {
                 MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
@@ -137,7 +132,7 @@ public class LogAggregatorApplication {
                 //Write Decrypted File
                 if (MhFileAggregatorHelper.isFileEncrypted(logFileName)) {
                     String destinationFileName = logFileName.substring(0, logFileName.lastIndexOf("."));
-                    if (userInputToSaveDecryptedFiles.equalsIgnoreCase(mergeFilesYes)) {
+                    if (isValueYes(userInputToSaveDecryptedFiles)) {
                         mhFileWriter.writeDecryptedFile(destinationFileName, singleFileContentsMap);
                     }
                 }
@@ -159,6 +154,9 @@ public class LogAggregatorApplication {
                 .replace("mergedFileLocation", mhFileWriter.getLogFilesOutPutLocation() + MhFileConstants.BACKSLASH + mhFileWriter.getLogFilesOutPutName()));
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
+    }
+    private boolean isValueYes(String userPermission){
+        return userPermission.equalsIgnoreCase(mergeFilesYes);
     }
 
     private double getTimeDiffInSeconds(long endTime, long startTime) {

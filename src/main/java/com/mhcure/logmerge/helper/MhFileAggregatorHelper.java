@@ -1,8 +1,5 @@
 package com.mhcure.logmerge.helper;
 
-import java.util.Scanner;
-import java.util.StringTokenizer;
-
 public class MhFileAggregatorHelper {
 
     public static void printInstructionsOnConsole(String msg) {

@@ -8,6 +8,7 @@ public enum MhMessageKeyEnum {
     IGNORE_MERGING("com.mhcure.logfiles.ignore_merging"),
     TOTAL_FILES_FOUND("com.mhcure.userInfo.message.totalFiles"),
     WRITE_BUFFERED_SIZE("com.mhcure.userInfo.message.bufferSize"),
+    IGNORE_INVALID_FILE("com.mhcure.logfiles.skip_invalid_files"),
     MESSAGE_NO_FILES_FOUND("com.mhcure.userInfo.message.notfound"),
     MESSAGE_FINISHED_MERGING("com.mhcure.userInfo.message.mergingFiles"),
     MESSAGE_LOG_FILES_LOCATION("com.mhcure.userPrompt.message.locationIs"),
