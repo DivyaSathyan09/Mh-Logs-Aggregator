@@ -16,6 +16,7 @@ import java.util.TreeMap;
 public class MhFileWriter {
 
     private static final double MEG = (Math.pow(1024, 2));
+
     @Value("${logfiles.location}")
     private String logFilesLocation;
 

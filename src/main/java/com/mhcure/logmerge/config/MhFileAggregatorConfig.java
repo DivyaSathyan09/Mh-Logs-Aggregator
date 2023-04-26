@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MhFileAggregatorConfig {
+
     @Bean
     public MhFileReader getMhFileReader() {
         return new MhFileReader();

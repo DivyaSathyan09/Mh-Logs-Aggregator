@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class MhFileAggregatorProperties {
     //	@Value("${secure.properties.location}")//Uncomment this line to run from command prompt
     private String mhFileAggregatorPropertiesLocation;
+
     @Value("${logfiles.location}")
     private String logFilesLocation;
 }
