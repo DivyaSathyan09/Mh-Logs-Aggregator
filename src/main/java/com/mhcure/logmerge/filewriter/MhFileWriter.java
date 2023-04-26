@@ -42,25 +42,14 @@ public class MhFileWriter {
         double countLines = 0;
         // Display the TreeMap which is naturally sorted
         TreeMap<Long, String> sortedTreeMapWithFileLines = fileContentsTreeMap;
-        Scanner inputToSaveMultipleFiles = new Scanner(System.in);
-        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
-        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-        String keyToSaveMultipleFiles = inputToSaveMultipleFiles.next();
-        if (isValueNoToSplitFile(keyToSaveMultipleFiles)) {
+        if (!isFileSplitRequired()) {
             saveInSingleFile(sortedTreeMapWithFileLines, bufSize);
             return;
-        }
-        while (!keyToSaveMultipleFiles.equalsIgnoreCase("y") && !keyToSaveMultipleFiles.equalsIgnoreCase("X")) {
-            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.INVALID_ENTRY_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
-            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-            keyToSaveMultipleFiles = new Scanner(System.in).next();
         }
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_MAXIMUM_LINES_IN_LOG_FILE.getKey()));
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-        int totalNumberOfLinesOfLogFile = inputToSaveMultipleFiles.nextInt();
+        int totalNumberOfLinesOfLogFile = new Scanner(System.in).nextInt();
         if(totalNumberOfLinesOfLogFile <= 1){
             saveInSingleFile(sortedTreeMapWithFileLines, bufSize);
             return;
@@ -117,7 +106,18 @@ public class MhFileWriter {
         return bufferedWriter;
     }
 
-    private boolean isValueNoToSplitFile(String userPermission){
-        return userPermission.equalsIgnoreCase("X");
+    private boolean isFileSplitRequired(){
+        Scanner inputToSaveMultipleFiles = new Scanner(System.in);
+        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
+        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
+        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
+        String keyToSaveMultipleFiles = inputToSaveMultipleFiles.next();
+        while (!keyToSaveMultipleFiles.equalsIgnoreCase("y") && !keyToSaveMultipleFiles.equalsIgnoreCase("X")) {
+            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
+            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.INVALID_ENTRY_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
+            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
+            keyToSaveMultipleFiles = new Scanner(System.in).next();
+        }
+        return keyToSaveMultipleFiles.equalsIgnoreCase("Y");
     }
 }
