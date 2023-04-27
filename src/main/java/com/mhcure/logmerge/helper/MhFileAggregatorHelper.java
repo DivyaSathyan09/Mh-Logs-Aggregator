@@ -1,5 +1,10 @@
 package com.mhcure.logmerge.helper;
 
+import com.mhcure.logmerge.constants.MhFileConstants;
+
+import java.util.Scanner;
+import java.util.StringTokenizer;
+
 public class MhFileAggregatorHelper {
 
     public static void printInstructionsOnConsole(String msg) {
@@ -13,6 +18,6 @@ public class MhFileAggregatorHelper {
     }
 
     public static boolean isFileEncrypted(String fileName) {
-        return fileName.toLowerCase().endsWith(".encrypted");
+        return fileName.toLowerCase().endsWith(MhFileConstants.ENCRYPTED);
     }
 }

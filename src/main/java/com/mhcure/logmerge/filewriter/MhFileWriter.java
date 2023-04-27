@@ -50,7 +50,7 @@ public class MhFileWriter {
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_MAXIMUM_LINES_IN_LOG_FILE.getKey()));
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         int totalNumberOfLinesOfLogFile = new Scanner(System.in).nextInt();
-        if(totalNumberOfLinesOfLogFile <= 1){
+        if (totalNumberOfLinesOfLogFile <= 1) {
             saveInSingleFile(sortedTreeMapWithFileLines, bufSize);
             return;
         }
@@ -63,7 +63,6 @@ public class MhFileWriter {
             }
             writeLineToFile(entry.getValue(), bufferedWriter);
             countLines++;
-
         }
         bufferedWriter.close();
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
@@ -77,9 +76,7 @@ public class MhFileWriter {
             writeLineToFile(entry.getValue(), bufferedWriter);
         }
         bufferedWriter.close();
-
-        System.out.println(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.WRITE_BUFFERED_SIZE.getKey()) + bufSize + ")... ");
-
+        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.WRITE_BUFFERED_SIZE.getKey()) + bufSize + ")... ");
     }
 
     public void writeDecryptedFile(String destinationFileName, Map<Long, String> singleFileContentsMap) throws IOException {
@@ -106,18 +103,18 @@ public class MhFileWriter {
         return bufferedWriter;
     }
 
-    private boolean isFileSplitRequired(){
+    private boolean isFileSplitRequired() {
         Scanner inputToSaveMultipleFiles = new Scanner(System.in);
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         String keyToSaveMultipleFiles = inputToSaveMultipleFiles.next();
-        while (!keyToSaveMultipleFiles.equalsIgnoreCase("y") && !keyToSaveMultipleFiles.equalsIgnoreCase("X")) {
+        while (!keyToSaveMultipleFiles.equalsIgnoreCase(MhFileConstants.USER_PERMISSION_YES) && !keyToSaveMultipleFiles.equalsIgnoreCase(MhFileConstants.USER_PERMISSION_N0)) {
             MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.INVALID_ENTRY_TO_SAVE_LOGS_IN_MULTIPLE_FILES.getKey()));
             MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
             keyToSaveMultipleFiles = new Scanner(System.in).next();
         }
-        return keyToSaveMultipleFiles.equalsIgnoreCase("Y");
+        return keyToSaveMultipleFiles.equalsIgnoreCase(MhFileConstants.USER_PERMISSION_YES);
     }
 }

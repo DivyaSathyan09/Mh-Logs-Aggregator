@@ -173,12 +173,12 @@ public class MhFileReader {
 
     private Cipher getCipherObject() throws Exception {
         final byte[] encryptionKey = getEncryptionKey().getBytes();
-        final String ALGO = "AES";
+        final String ALGO = MhFileConstants.ALGO;
         Cipher cipherObject = null;
         Key key = null;
-        if (key == null) key = new SecretKeySpec(encryptionKey, "AES");
+        if (key == null) key = new SecretKeySpec(encryptionKey,MhFileConstants.ALGO);
         if (cipherObject == null) {
-            cipherObject = Cipher.getInstance("AES");
+            cipherObject = Cipher.getInstance(MhFileConstants.CYPHER_ALGO_AES);
             cipherObject.init(Cipher.DECRYPT_MODE, key);
         }
         return cipherObject;

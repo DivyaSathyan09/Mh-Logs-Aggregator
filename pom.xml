@@ -1,34 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.0-SNAPSHOT</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.0.5</version>
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>Mh-LogsAggregator</artifactId>
+	<groupId>com.mhcure.javatools</groupId>
+	<artifactId>logaggregator</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>LogAggregator</name>
+	<description>Log Aggregator Spring Boot</description>
 	<packaging>jar</packaging>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>logs</name>
-	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<version>3.0.5</version>
-		</dependency>
-
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -40,20 +34,97 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>de.rub.nds.tlsscanner</groupId>
-			<artifactId>TLS-Scanner</artifactId>
-			<version>4.2.3</version>
-		</dependency>
 	</dependencies>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+			<!-- use maven-resources-plugin to copy property, bat & jar files to another folder. -->
+				<!-- Either use maven-resources-plugin plugin or maven-antrun-plugin but not both -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.2.0</version>
+					<executions>
+						<execution>
+							<id>copy-resources</id>
+							<!-- here the phase you need -->
+							<phase>validate</phase>
+							<goals>
+								<goal>copy-resources</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${basedir}/target/output</outputDirectory>
+								<resources>
+									<resource>
+										<directory>${basedir}/src/main/resources</directory>
+										<filtering>true</filtering>
+										<includes>
+											<include>MhFileAggregator.properties</include>
+										</includes>
+										<excludes>
+											<exclude>application.properties</exclude>
+											<exclude>messages.properties</exclude>
+										</excludes>
+
+									</resource>
+								</resources>
+							</configuration>
+						</execution>
+						<execution>
+							<id>copy-batfiles</id>
+							<!-- here the phase you need -->
+							<phase>validate</phase>
+							<goals>
+								<goal>copy-resources</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${basedir}/target/output</outputDirectory>
+								<resources>
+									<resource>
+										<directory>${basedir}/configfiles</directory>
+										<filtering>true</filtering>
+										<includes>
+											<include>*.bat</include>
+										</includes>
+										<excludes>
+											<exclude>application.properties</exclude>
+											<exclude>messages.properties</exclude>
+										</excludes>
+
+									</resource>
+								</resources>
+							</configuration>
+						</execution>
+						<execution>
+							<id>copy-fatjar-on-build</id>
+							<!-- here the phase you need -->
+							<phase>package</phase>
+							<goals>
+								<goal>copy-resources</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${basedir}/target/output</outputDirectory>
+								<resources>
+									<resource>
+										<directory>${basedir}/target</directory>
+										<filtering>false</filtering>
+										<includes>
+											<include>logaggregator-1.0.0-SNAPSHOT.jar</include>
+										</includes>
+									</resource>
+								</resources>
+							</configuration>
+						</execution>												
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
@@ -61,44 +132,64 @@
 						</exclude>
 					</excludes>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<mainClass>
+								com.mhcure.logmerge.LogAggregatorApplication
+							</mainClass>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- Plugin to copy jar, property & bat files to a common location -->
+				<!-- Either use maven-resources-plugin plugin or maven-antrun-plugin but not both -->
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>package</phase>
+						<configuration>
+							<target>
+								<echo>********************************************************ANT
+									TASK - copying files....</echo>
+								<copy todir="${basedir}/target/distribution"
+									overwrite="true" flatten="true">
+									<fileset dir="${basedir}" includes="*.bat">
+										<include name="target/*.jar" />
+									</fileset>
+								</copy>
+								<echo>2222222222222222222222********************************************************ANT
+									TASK - copying files....</echo>
+								<copy todir="${basedir}/target/distribution"
+									overwrite="true" flatten="true">
+									<fileset dir="${basedir}/src/main/resources"
+										includes="*.bat">
+										<include name="MhFileAggregator.properties" />
+									</fileset>
+								</copy>
+								<echo>********************************************************ANT
+									TASK - copying files....</echo>
+								<copy todir="${basedir}/target/distribution"
+									overwrite="true" flatten="true">
+									<fileset dir="${basedir}/configfiles" includes="*.bat">
+										<include name="*.bat" />
+									</fileset>
+								</copy>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-snapshots</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-snapshots</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
 
 </project>
