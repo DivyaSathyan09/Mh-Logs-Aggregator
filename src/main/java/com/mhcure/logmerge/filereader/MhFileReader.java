@@ -86,11 +86,6 @@ public class MhFileReader {
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage
                 (MhMessageKeyEnum.MESSAGE_LOG_FILES_LOCATION.getKey()).replace("logFolderLocation", logFilesLocation));
-        if (!logFilesLocationFile.exists()) {
-            MhFileAggregatorHelper.printToConsole(logFilesLocation + MhMessagePropertiesFileReader.
-                    getMessage(MhMessageKeyEnum.MESSAGE_INVALID_FILE_LOCATION.getKey()));
-            return fileList;
-        }
         String[] logFilesArray = logFilesLocationFile.list();
         if (logFilesArray != null) {
             fileList = Arrays.asList(logFilesArray);

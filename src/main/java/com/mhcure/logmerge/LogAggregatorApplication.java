@@ -133,6 +133,11 @@ public class LogAggregatorApplication {
             double fileReadTimeInseconds = getTimeDiffInSeconds(fileReadEndTime, fileReadStartTime);
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.TOTAL_TIME_TO_READ_FILES
                     .getKey()) + fileReadTimeInseconds);
+        } else {
+                MhFileAggregatorHelper.printToConsole( MhMessagePropertiesFileReader.
+                        getMessage(MhMessageKeyEnum.MESSAGE_INVALID_FILE_LOCATION.getKey()));
+                MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
+                return;
         }
         List<String> fileContentsList = new ArrayList(fileContentsMap.values());
         long fileWriteStartTime = System.currentTimeMillis();
