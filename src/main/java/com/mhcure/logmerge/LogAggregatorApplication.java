@@ -42,6 +42,9 @@ public class LogAggregatorApplication {
     @Value("${com.mhcure.logfiles.toExit}")
     private String exitApplicationYes;
 
+    @Value("${save_decrypted_files}")
+    private String saveDecryptedFiles;
+
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(LogAggregatorApplication.class, args);
         exitApplication(ctx);
@@ -102,7 +105,6 @@ public class LogAggregatorApplication {
                     .getKey()).replace("totalFiles", "" + totalFilesCount));
             int fileCounter = 0;
             long fileReadStartTime = System.currentTimeMillis();
-            boolean valueToSaveDecryptedFile = isDecryptedFilesSavingRequired();
             for (String logFileName : logFilesPathList) {
                 fileCounter++;
                 Map<Long, String> singleFileContentsMap = new HashMap<>();
@@ -124,7 +126,8 @@ public class LogAggregatorApplication {
                 //Write Decrypted File
                 if (MhFileAggregatorHelper.isFileEncrypted(logFileName)) {
                     String destinationFileName = logFileName.substring(0, logFileName.lastIndexOf("."));
-                    if (valueToSaveDecryptedFile) {
+                    if (saveDecryptedFiles.equalsIgnoreCase("n"))
+                    {
                         mhFileWriter.writeDecryptedFile(destinationFileName, singleFileContentsMap);
                     }
                 }
@@ -153,23 +156,6 @@ public class LogAggregatorApplication {
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
     }
-
-    private boolean isDecryptedFilesSavingRequired(){
-        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
-                MESSAGE_TO_SAVE_DECRYPTED_FILES.getKey()));
-        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-        String userInputToSaveDecryptedFiles = new Scanner(System.in).next();
-        while (!userInputToSaveDecryptedFiles.equalsIgnoreCase(mergeFilesYes) && !userInputToSaveDecryptedFiles.
-                equalsIgnoreCase(exitApplicationYes)) {
-            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
-                    INVALID_INPUT_TO_SAVE_DECRYPTED_FILE.getKey()));
-            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-            userInputToSaveDecryptedFiles = new Scanner(System.in).next();
-        }
-        return userInputToSaveDecryptedFiles.equalsIgnoreCase(MhFileConstants.USER_PERMISSION_YES);
-    }
-
     private double getTimeDiffInSeconds(long endTime, long startTime) {
         return (endTime - startTime) / (1000.0);
     }
