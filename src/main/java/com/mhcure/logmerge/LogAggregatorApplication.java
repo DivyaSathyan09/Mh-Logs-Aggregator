@@ -18,6 +18,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.util.*;
 
@@ -64,10 +65,10 @@ public class LogAggregatorApplication {
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) throws ParseException, IOException {
         long programStartTime = 0;
-            if (isMergingRequired()) {
-                programStartTime = System.currentTimeMillis();
-                performLogAggregation();
-            }
+        if (isMergingRequired()) {
+            programStartTime = System.currentTimeMillis();
+            performLogAggregation();
+        }
         long programEndTime = System.currentTimeMillis();
         double programTimeInseconds = getTimeDiffInSeconds(programEndTime, programStartTime);
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
@@ -90,7 +91,7 @@ public class LogAggregatorApplication {
                 MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader
                         .getMessage(MhMessageKeyEnum.INVALID_INPUT_TO_CONTINUE_MERGING_LOG_FILE.getKey()));
             }
-    } while (!userInput.equalsIgnoreCase(exitApplicationYes) && !userInput.equalsIgnoreCase(mergeFilesYes));
+        } while (!userInput.equalsIgnoreCase(exitApplicationYes) && !userInput.equalsIgnoreCase(mergeFilesYes));
         return userInput.equalsIgnoreCase(mergeFilesYes);
     }
 
@@ -105,6 +106,7 @@ public class LogAggregatorApplication {
                     .getKey()).replace("totalFiles", "" + totalFilesCount));
             int fileCounter = 0;
             long fileReadStartTime = System.currentTimeMillis();
+            boolean valueToSaveDecryptedFile = isDecryptedFilesSavingRequired();
             for (String logFileName : logFilesPathList) {
                 fileCounter++;
                 Map<Long, String> singleFileContentsMap = new HashMap<>();
@@ -123,13 +125,14 @@ public class LogAggregatorApplication {
                 }
                 MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_PROCESSING_FILE
                         .getKey()).replace("totalNumberOf", "" + fileCounter).replace("totalfiles", "" + totalFilesCount));
+
                 //Write Decrypted File
                 if (MhFileAggregatorHelper.isFileEncrypted(logFileName)) {
                     String destinationFileName = logFileName.substring(0, logFileName.lastIndexOf("."));
-                    if (saveDecryptedFiles.equalsIgnoreCase("n"))
-                    {
+                    if (valueToSaveDecryptedFile) {
                         mhFileWriter.writeDecryptedFile(destinationFileName, singleFileContentsMap);
                     }
+
                 }
             }
             long fileReadEndTime = System.currentTimeMillis();
@@ -137,10 +140,10 @@ public class LogAggregatorApplication {
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.TOTAL_TIME_TO_READ_FILES
                     .getKey()) + fileReadTimeInseconds);
         } else {
-                MhFileAggregatorHelper.printToConsole( MhMessagePropertiesFileReader.
-                        getMessage(MhMessageKeyEnum.MESSAGE_INVALID_FILE_LOCATION.getKey()));
-                MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
-                return;
+            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.
+                    getMessage(MhMessageKeyEnum.MESSAGE_INVALID_FILE_LOCATION.getKey()));
+            MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
+            return;
         }
         List<String> fileContentsList = new ArrayList(fileContentsMap.values());
         long fileWriteStartTime = System.currentTimeMillis();
@@ -156,6 +159,15 @@ public class LogAggregatorApplication {
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
     }
+
+    private boolean isDecryptedFilesSavingRequired() {
+        if (saveDecryptedFiles.equalsIgnoreCase(saveDecryptedFiles)) {
+            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage
+                    (MhMessageKeyEnum.SAVE_DECRYPTED_FILES.getKey()));
+        }
+        return saveDecryptedFiles.equalsIgnoreCase(MhFileConstants.USER_PERMISSION_YES);
+    }
+
     private double getTimeDiffInSeconds(long endTime, long startTime) {
         return (endTime - startTime) / (1000.0);
     }

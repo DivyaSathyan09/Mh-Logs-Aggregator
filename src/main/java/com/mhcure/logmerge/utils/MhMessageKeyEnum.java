@@ -21,6 +21,7 @@ public enum MhMessageKeyEnum {
     MESSAGE_SPECIFIED_FOLDER("com.mhcure.userPrompt.message.folderSpecified"),
     MESSAGE_TO_SAVE_DECRYPTED_FILES("com.mhcure.logfiles.ask_to_save.decrypted.files"),
     MESSAGE_TOTAL_TIME_TO_RUN_PROGRAM("com.mhcure.userInfo.message.totalTime.to.runProgram"),
+    SAVE_DECRYPTED_FILES("com.mhcure.userInfo.message.save.decrypted.files"),
     TOTAL_FILES_FOUND("com.mhcure.userInfo.message.totalFiles"),
     TOTAL_TIME_TO_READ_FILES("com.mhcure.userInfo.message.totalTime.to.readFiles"),
     TOTAL_TIME_TO_WRITE_FILES("com.mhcure.userInfo.message.totalTime.to.writeFiles"),

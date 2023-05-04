@@ -103,7 +103,7 @@ public class MhFileReader {
         boolean isEncryptedFile = false;
         Cipher cipherObject = null;
         if (!logFile.isFile()) {
-            System.out.println(fileName + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.IGNORE_INVALID_FILE.getKey()));
+            MhFileAggregatorHelper.printToConsole(fileName + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.IGNORE_INVALID_FILE.getKey()));
             return fileContentsMap;
         }
         logFileReader = new FileReader(logFile);

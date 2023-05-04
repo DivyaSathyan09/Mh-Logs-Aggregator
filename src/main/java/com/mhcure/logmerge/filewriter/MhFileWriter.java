@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.TreeMap;
 
 @Data
@@ -48,21 +47,21 @@ public class MhFileWriter {
         double countLines = 0;
         // Display the TreeMap which is naturally sorted
         TreeMap<Long, String> sortedTreeMapWithFileLines = fileContentsTreeMap;
-        if (splitLogFilesIntoMultiple.equalsIgnoreCase(MhFileConstants.USER_PERMISSION_YES)) {
+        if (splitLogFilesIntoMultiple.equalsIgnoreCase(MhFileConstants.USER_PERMISSION_N0)) {
             saveInSingleFile(sortedTreeMapWithFileLines, bufSize);
             return;
         }
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_MAXIMUM_LINES_IN_LOG_FILE.getKey()));
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-        if (numberOfLinesPerOutputfiles <= 1000) {
+        if (numberOfLinesPerOutputfiles <= 1) {
             saveInSingleFile(sortedTreeMapWithFileLines, bufSize);
             return;
         }
         File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName);
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
         for (Map.Entry<Long, String> entry : sortedTreeMapWithFileLines.entrySet()) {
-            if (countLines > numberOfLinesPerOutputfiles) {
+            if (countLines == numberOfLinesPerOutputfiles) {
                 bufferedWriter = createNewFile();
                 countLines = 0;
             }
