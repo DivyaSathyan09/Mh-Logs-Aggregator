@@ -85,7 +85,7 @@ public class MhFileReader {
         File logFilesLocationFile = new File(logFilesLocation);
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage
-                (MhMessageKeyEnum.MESSAGE_LOG_FILES_LOCATION.getKey()).replace("logFolderLocation", logFilesLocation));
+                (MhMessageKeyEnum.MESSAGE_LOG_FILES_LOCATION.getKey()).replace(MhFileConstants.LOG_FOLDER_LOCATION, logFilesLocation));
         String[] logFilesArray = logFilesLocationFile.list();
         if (logFilesArray != null) {
             fileList = Arrays.asList(logFilesArray);
@@ -116,7 +116,6 @@ public class MhFileReader {
         int logDateTimePatternLength = dateTimeFormatInLogFile.length();
         Pattern logTypePattern = Pattern.compile(dateTimeRegexPatternInLogFile);
         BufferedReader br = new BufferedReader(logFileReader);
-        int lineCounter = 0;
         Long keyForPreviousLine = null;
         for (String line; (line = br.readLine()) != null; ) {
             if (isEncryptedFile) {
@@ -151,7 +150,6 @@ public class MhFileReader {
             if (keyForLine != null) {
                 keyForPreviousLine = keyForLine;
             }
-            lineCounter++;
         }
         if (logFileReader != null) {
             logFileReader.close();
@@ -168,7 +166,6 @@ public class MhFileReader {
 
     private Cipher getCipherObject() throws Exception {
         final byte[] encryptionKey = getEncryptionKey().getBytes();
-        final String ALGO = MhFileConstants.ALGO;
         Cipher cipherObject = null;
         Key key = null;
         if (key == null) key = new SecretKeySpec(encryptionKey,MhFileConstants.ALGO);

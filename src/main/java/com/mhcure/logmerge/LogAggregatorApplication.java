@@ -18,7 +18,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.util.*;
 
@@ -70,9 +69,9 @@ public class LogAggregatorApplication {
             performLogAggregation();
         }
         long programEndTime = System.currentTimeMillis();
-        double programTimeInseconds = getTimeDiffInSeconds(programEndTime, programStartTime);
+        double programTimeInSeconds = getTimeDiffInSeconds(programEndTime, programStartTime);
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
-                MESSAGE_TOTAL_TIME_TO_RUN_PROGRAM.getKey()) + programTimeInseconds);
+                MESSAGE_TOTAL_TIME_TO_RUN_PROGRAM.getKey()) + programTimeInSeconds);
         return args -> {
         };
     }
@@ -82,7 +81,7 @@ public class LogAggregatorApplication {
         MhFileAggregatorHelper.printInstructionsOnConsole(MhFileConstants.NEW_LINE_CHAR);
         do {
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
-                    MESSAGE_SPECIFIED_FOLDER.getKey()).replace("logFolderLocation", mhFileReader.getLogFilesLocation()));
+                    MESSAGE_SPECIFIED_FOLDER.getKey()).replace(MhFileConstants.LOG_FOLDER_LOCATION, mhFileReader.getLogFilesLocation()));
             MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
             Scanner in = new Scanner(System.in);
             userInput = in.nextLine();
@@ -103,7 +102,7 @@ public class LogAggregatorApplication {
         String outputFileName = mhFileWriter.getLogFilesOutPutName();
         if (totalFilesCount > 0) {
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.TOTAL_FILES_FOUND
-                    .getKey()).replace("totalFiles", "" + totalFilesCount));
+                    .getKey()).replace(MhFileConstants.TOTAL_FILES, "" + totalFilesCount));
             int fileCounter = 0;
             long fileReadStartTime = System.currentTimeMillis();
             boolean valueToSaveDecryptedFile = isDecryptedFilesSavingRequired();
@@ -124,7 +123,7 @@ public class LogAggregatorApplication {
                     MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.IGNORE_MERGING.getKey()));
                 }
                 MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_PROCESSING_FILE
-                        .getKey()).replace("totalNumberOf", "" + fileCounter).replace("totalfiles", "" + totalFilesCount));
+                        .getKey()).replace(MhFileConstants.TOTAL_NUMBER_OF_FILES, "" + fileCounter).replace(MhFileConstants.TOTAL_FILES, "" + totalFilesCount));
 
                 //Write Decrypted File
                 if (MhFileAggregatorHelper.isFileEncrypted(logFileName)) {
@@ -132,7 +131,6 @@ public class LogAggregatorApplication {
                     if (valueToSaveDecryptedFile) {
                         mhFileWriter.writeDecryptedFile(destinationFileName, singleFileContentsMap);
                     }
-
                 }
             }
             long fileReadEndTime = System.currentTimeMillis();
@@ -145,7 +143,6 @@ public class LogAggregatorApplication {
             MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
             return;
         }
-        List<String> fileContentsList = new ArrayList(fileContentsMap.values());
         long fileWriteStartTime = System.currentTimeMillis();
         mhFileWriter.writeToFile(fileContentsTreeMap);// UseThisToUseTreeMap
         long fileWriteEndTime = System.currentTimeMillis();
@@ -154,8 +151,8 @@ public class LogAggregatorApplication {
                 getKey()) + fileWriteTimeInSeconds);
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.
-                        MESSAGE_FINISHED_MERGING.getKey()).replace("totalFiles", "" + totalFilesCount)
-                .replace("mergedFileLocation", mhFileWriter.getLogFilesOutPutLocation() + MhFileConstants.BACKSLASH + mhFileWriter.getLogFilesOutPutName()));
+                        MESSAGE_FINISHED_MERGING.getKey()).replace(MhFileConstants.TOTAL_FILES, "" + totalFilesCount)
+                .replace(MhFileConstants.MERGED_FILE_LOCATION, mhFileWriter.getLogFilesOutPutLocation() + MhFileConstants.FORWARD_SLASH + mhFileWriter.getLogFilesOutPutName()));
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
         MhFileAggregatorHelper.printToConsole(MhFileConstants.LINE_SEPARATOR);
     }

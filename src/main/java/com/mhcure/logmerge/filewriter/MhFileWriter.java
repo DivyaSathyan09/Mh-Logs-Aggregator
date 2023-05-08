@@ -38,7 +38,7 @@ public class MhFileWriter {
     private String splitLogFilesIntoMultiple;
 
     @Value("${number_of_lines_per_outputfile}")
-    private Integer numberOfLinesPerOutputfiles;
+    private Integer numberOfLinesPerOutPutFiles;
 
     private int fileCounter;
 
@@ -51,17 +51,14 @@ public class MhFileWriter {
             saveInSingleFile(sortedTreeMapWithFileLines, bufSize);
             return;
         }
-        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-        MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.ASK_MAXIMUM_LINES_IN_LOG_FILE.getKey()));
-        MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
-        if (numberOfLinesPerOutputfiles <= 1) {
+        if (numberOfLinesPerOutPutFiles <= 1) {
             saveInSingleFile(sortedTreeMapWithFileLines, bufSize);
             return;
         }
         File file = new File(logFilesOutPutLocation + MhFileConstants.BACKSLASH + logFilesOutPutName);
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
         for (Map.Entry<Long, String> entry : sortedTreeMapWithFileLines.entrySet()) {
-            if (countLines == numberOfLinesPerOutputfiles) {
+            if (countLines == numberOfLinesPerOutPutFiles) {
                 bufferedWriter = createNewFile();
                 countLines = 0;
             }
