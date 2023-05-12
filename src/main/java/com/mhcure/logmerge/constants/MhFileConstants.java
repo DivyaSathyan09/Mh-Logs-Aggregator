@@ -17,7 +17,7 @@ public class MhFileConstants {
     public static final String USER_PERMISSION_N0="x";
     public static final String USER_PERMISSION_YES ="y";
     public static final String USER_PROMPT_SPACE = "**********************************************************";
-    public static final String TOTAL_FILES="totalFiles";
+    public static final String TOTAL_FILES= "totalFiles";
     public static final String MERGED_FILE_LOCATION="mergedFileLocation";
     public static final String TOTAL_NUMBER_OF_FILES="totalNumberOf";
 }

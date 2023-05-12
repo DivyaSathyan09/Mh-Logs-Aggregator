@@ -89,16 +89,16 @@ public class MhFileReader {
         String[] logFilesArray = logFilesLocationFile.list();
         if (logFilesArray != null) {
             fileList = Arrays.asList(logFilesArray);
-        } else {
+        }else {
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader
                     .getMessage(MhMessageKeyEnum.MESSAGE_NO_FILES_FOUND.getKey()) + logFilesLocation);
         }
         return fileList;
     }
 
-    public Map<Long, String> readFileUsingBufferedReader(String fileName) throws Exception {
+    public Map<Long, String> readFileUsingBufferedReader(String fileName) {
         Map<Long, String> fileContentsMap = new HashMap<>();
-        FileReader logFileReader ;
+        FileReader logFileReader;
         File logFile = new File(logFilesLocation + MhFileConstants.BACKSLASH + fileName);
         boolean isEncryptedFile = false;
         Cipher cipherObject = null;
@@ -106,56 +106,64 @@ public class MhFileReader {
             MhFileAggregatorHelper.printToConsole(fileName + MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.IGNORE_INVALID_FILE.getKey()));
             return fileContentsMap;
         }
-        logFileReader = new FileReader(logFile);
-        if (MhFileAggregatorHelper.isFileEncrypted(fileName)) {
-            isEncryptedFile = true;
-            cipherObject = getCipherObject();
-        }
-        String dateTimeFormatInLogFile = getDateTimeFormatInLogFile(fileName);
-        String dateTimeRegexPatternInLogFile = getDateTimeRegexPatternInLogFile(fileName);
-        int logDateTimePatternLength = dateTimeFormatInLogFile.length();
-        Pattern logTypePattern = Pattern.compile(dateTimeRegexPatternInLogFile);
-        BufferedReader br = new BufferedReader(logFileReader);
-        Long keyForPreviousLine = null;
-        for (String line; (line = br.readLine()) != null; ) {
-            if (isEncryptedFile) {
-                line = getDecryptedText(line, cipherObject);
+        try {
+            logFileReader = new FileReader(logFile);
+            if (MhFileAggregatorHelper.isFileEncrypted(fileName)) {
+                isEncryptedFile = true;
+                cipherObject = getCipherObject();
             }
-            Long keyForLine = null;
-            boolean lineAddedToMap = false;
-            String lineToBeInserted = new StringTokenizer(fileName.replaceAll("_", " "))
-                    .nextToken() + MhFileConstants.FILENAME_LOGS_TMT_SEPARATOR + line;
-            if (line != null && line.length() > logDateTimePatternLength) {
-                String dateTimePart = line.substring(0, logDateTimePatternLength);
+            String dateTimeFormatInLogFile = getDateTimeFormatInLogFile(fileName);
+            String dateTimeRegexPatternInLogFile = getDateTimeRegexPatternInLogFile(fileName);
+            int logDateTimePatternLength = dateTimeFormatInLogFile.length();
+            Pattern logTypePattern = Pattern.compile(dateTimeRegexPatternInLogFile);
+            BufferedReader br = new BufferedReader(logFileReader);
+            Long keyForPreviousLine = null;
+            for (String line; (line = br.readLine()) != null; ) {
+                if (isEncryptedFile) {
+                    line = getDecryptedText(line, cipherObject);
+                }
+                Long keyForLine = null;
+                boolean lineAddedToMap = false;
+                String lineToBeInserted = new StringTokenizer(fileName.replaceAll("_", " "))
+                        .nextToken() + MhFileConstants.FILENAME_LOGS_TMT_SEPARATOR + line;
+                if (line != null && line.length() > logDateTimePatternLength) {
+                    String dateTimePart = line.substring(0, logDateTimePatternLength);
 
-                Matcher appLogTypeMatcher = logTypePattern.matcher(dateTimePart);
-                if (appLogTypeMatcher.find()) {
-                    long dateTimeInMilliSeconds = getTimeInMilliSeconds(dateTimePart, dateTimeFormatInLogFile);
-                    keyForLine = dateTimeInMilliSeconds;
-                    if (fileContentsMap.get(keyForLine) != null) {
-                        //Since timestamp can be duplicated in a same file
-                        fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + MhFileConstants
-                                .NEW_LINE_CHAR + lineToBeInserted);
-                    } else {
-                        fileContentsMap.put(keyForLine, lineToBeInserted);
+                    Matcher appLogTypeMatcher = logTypePattern.matcher(dateTimePart);
+                    if (appLogTypeMatcher.find()) {
+                        long dateTimeInMilliSeconds = getTimeInMilliSeconds(dateTimePart, dateTimeFormatInLogFile);
+                        keyForLine = dateTimeInMilliSeconds;
+                        if (fileContentsMap.get(keyForLine) != null) {
+                            //Since timestamp can be duplicated in a same file
+                            fileContentsMap.put(keyForLine, fileContentsMap.get(keyForLine) + MhFileConstants
+                                    .NEW_LINE_CHAR + lineToBeInserted);
+                        } else {
+                            fileContentsMap.put(keyForLine, lineToBeInserted);
+                        }
+                        lineAddedToMap = true;
                     }
-                    lineAddedToMap = true;
+                }
+                //if line don't have datetimepart then append to prev line
+                if (!lineAddedToMap && keyForPreviousLine != null && fileContentsMap.get(keyForPreviousLine) != null) {
+                    fileContentsMap.put(keyForPreviousLine, fileContentsMap.get(keyForPreviousLine) + lineToBeInserted);
+                }
+
+                if (keyForLine != null) {
+                    keyForPreviousLine = keyForLine;
                 }
             }
-            //if line don't have datetimepart then append to prev line
-            if (!lineAddedToMap && keyForPreviousLine != null && fileContentsMap.get(keyForPreviousLine) != null) {
-                fileContentsMap.put(keyForPreviousLine, fileContentsMap.get(keyForPreviousLine) + lineToBeInserted);
+            if (logFileReader != null) {
+                logFileReader.close();
             }
+            br.close();
+            return fileContentsMap;
+        }
+        catch (Exception e){
+           MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.Invalid_Key.getKey())
 
-            if (keyForLine != null) {
-                keyForPreviousLine = keyForLine;
-            }
-        }
-        if (logFileReader != null) {
-            logFileReader.close();
-        }
-        br.close();
-        return fileContentsMap;
+
+           );
+        }return null;
     }
 
     public String getDecryptedText(String encryptedData, Cipher cipherObject) throws Exception {

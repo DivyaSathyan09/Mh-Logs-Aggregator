@@ -17,6 +17,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import javax.security.auth.kerberos.EncryptionKey;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
@@ -45,6 +47,8 @@ public class LogAggregatorApplication {
     @Value("${save_decrypted_files}")
     private String saveDecryptedFiles;
 
+    @Value("${generated_decrypted.files_location}")
+    private String decryptedFileLocation;
     public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(LogAggregatorApplication.class, args);
         exitApplication(ctx);
@@ -105,30 +109,29 @@ public class LogAggregatorApplication {
                     .getKey()).replace(MhFileConstants.TOTAL_FILES, "" + totalFilesCount));
             int fileCounter = 0;
             long fileReadStartTime = System.currentTimeMillis();
-            boolean valueToSaveDecryptedFile = isDecryptedFilesSavingRequired();
+            boolean saveDecryptedFile = isDecryptedFilesSavingRequired();
             for (String logFileName : logFilesPathList) {
                 fileCounter++;
                 Map<Long, String> singleFileContentsMap = new HashMap<>();
                 TreeMap<Long, String> singleFileContentsTreeMap = new TreeMap<>();
                 if (!outputFileName.equals(logFileName)) {
-                    try {
                         singleFileContentsMap = mhFileReader.readFileUsingBufferedReader(logFileName);// UseThisToUseHashMap
+                    if (singleFileContentsMap == null){
+                        return;
+                    }
                         fileContentsTreeMap.putAll(singleFileContentsMap);
                         fileContentsTreeMap.putAll(singleFileContentsTreeMap);
-                    } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+
                 } else {
                     MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.IGNORE_MERGING.getKey()));
                 }
                 MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.MESSAGE_PROCESSING_FILE
-                        .getKey()).replace(MhFileConstants.TOTAL_NUMBER_OF_FILES, "" + fileCounter).replace(MhFileConstants.TOTAL_FILES, "" + totalFilesCount));
+                        .getKey()).replace(MhFileConstants.TOTAL_NUMBER_OF_FILES, "" + fileCounter).replace(MhFileConstants.TOTAL_FILES , "" + totalFilesCount));
 
                 //Write Decrypted File
                 if (MhFileAggregatorHelper.isFileEncrypted(logFileName)) {
                     String destinationFileName = logFileName.substring(0, logFileName.lastIndexOf("."));
-                    if (valueToSaveDecryptedFile) {
+                    if (saveDecryptedFile) {
                         mhFileWriter.writeDecryptedFile(destinationFileName, singleFileContentsMap);
                     }
                 }
@@ -158,6 +161,10 @@ public class LogAggregatorApplication {
     }
 
     private boolean isDecryptedFilesSavingRequired() {
+        if(!new File(decryptedFileLocation).exists()){
+            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.INVALID_DECRYPTED_LOCATION.getKey()));
+            return false;
+        }
         if (saveDecryptedFiles.equalsIgnoreCase(saveDecryptedFiles)) {
             MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage
                     (MhMessageKeyEnum.SAVE_DECRYPTED_FILES.getKey()));

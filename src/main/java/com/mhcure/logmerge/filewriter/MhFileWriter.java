@@ -16,9 +16,6 @@ public class MhFileWriter {
 
     private static final double MEG = (Math.pow(1024, 2));
 
-    @Value("${logfiles.location}")
-    private String logFilesLocation;
-
     @Value("${logfiles.output.location}")
     private String logFilesOutPutLocation;
 
@@ -47,6 +44,12 @@ public class MhFileWriter {
         double countLines = 0;
         // Display the TreeMap which is naturally sorted
         TreeMap<Long, String> sortedTreeMapWithFileLines = fileContentsTreeMap;
+        if (!new File(logFilesOutPutLocation).exists()){
+            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
+            MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.INVALID_LOGFILE_OUTPUT_LOCATION.getKey()));
+            MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
+            return;
+        }
         if (splitLogFilesIntoMultiple.equalsIgnoreCase(MhFileConstants.USER_PERMISSION_N0)) {
             saveInSingleFile(sortedTreeMapWithFileLines, bufSize);
             return;
@@ -64,6 +67,7 @@ public class MhFileWriter {
             }
             writeLineToFile(entry.getValue(), bufferedWriter);
             countLines++;
+
         }
         bufferedWriter.close();
         MhFileAggregatorHelper.printToConsole(MhFileConstants.USER_PROMPT_SPACE);
@@ -80,16 +84,16 @@ public class MhFileWriter {
         MhFileAggregatorHelper.printToConsole(MhMessagePropertiesFileReader.getMessage(MhMessageKeyEnum.WRITE_BUFFERED_SIZE.getKey()) + bufSize + ")... ");
     }
 
-    public void writeDecryptedFile(String destinationFileName, Map<Long, String> singleFileContentsMap) throws IOException {
-        int bufSize = 4 * (int) MEG;
-        File file = new File(decryptedFileLocation + MhFileConstants.BACKSLASH + destinationFileName);
-        FileWriter writer = new FileWriter(file);
-        BufferedWriter bufferedWriter = new BufferedWriter(writer, bufSize);
-        for (Map.Entry<Long, String> entry : singleFileContentsMap.entrySet()) {
-            writeLineToFile(entry.getValue(), bufferedWriter);
+    public void writeDecryptedFile(String destinationFileName, Map<Long, String> singleFileContentsMap)throws IOException{
+            int bufSize = 4 * (int) MEG;
+            File file = new File(decryptedFileLocation + MhFileConstants.BACKSLASH + destinationFileName);
+            FileWriter writer = new FileWriter(file);
+            BufferedWriter bufferedWriter = new BufferedWriter(writer, bufSize);
+            for (Map.Entry<Long, String> entry : singleFileContentsMap.entrySet()) {
+                writeLineToFile(entry.getValue(), bufferedWriter);
+            }
+            bufferedWriter.close();
         }
-        bufferedWriter.close();
-    }
 
     private void writeLineToFile(String record, Writer writer) throws IOException {
         long start = System.currentTimeMillis();
