@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 //@PropertySource("file:${secure.properties.location}/MhFileAggregator.properties") //Uncomment this line to run from command prompt
 @PropertySource("classpath:MhFileAggregator.properties")//Uncomment this line to run from Eclipse
 public class MhFileAggregatorProperties {
-    //	@Value("${secure.properties.location}")//Uncomment this line to run from command prompt
+// 	@Value("${secure.properties.location}")//Uncomment this line to run from command prompt
     private String mhFileAggregatorPropertiesLocation;
 
     @Value("${logfiles.location}")

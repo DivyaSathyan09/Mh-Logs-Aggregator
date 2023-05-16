@@ -50,7 +50,9 @@ public class LogAggregatorApplication {
     @Value("${generated_decrypted.files_location}")
     private String decryptedFileLocation;
     public static void main(String[] args) {
+        MhFileAggregatorHelper.printToConsole("!!!!!!!!!!!! starting app");
         ConfigurableApplicationContext ctx = SpringApplication.run(LogAggregatorApplication.class, args);
+        MhFileAggregatorHelper.printToConsole("!!!!!!!!!!!! exiting app");
         exitApplication(ctx);
     }
 
@@ -67,6 +69,7 @@ public class LogAggregatorApplication {
 
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) throws ParseException, IOException {
+        MhFileAggregatorHelper.printToConsole("!!!!!!!!!!!! inside commandLinRunner");
         long programStartTime = 0;
         if (isMergingRequired()) {
             programStartTime = System.currentTimeMillis();
@@ -99,6 +102,8 @@ public class LogAggregatorApplication {
     }
 
     private void performLogAggregation() throws IOException {
+        MhFileAggregatorHelper.printToConsole("!!!!!!!!!!!! inside performLogAggregation");
+
         List<String> logFilesPathList = mhFileReader.getFilesList();
         Map<Long, String> fileContentsMap = new HashMap<>();
         TreeMap<Long, String> fileContentsTreeMap = new TreeMap<>();
@@ -147,6 +152,8 @@ public class LogAggregatorApplication {
             return;
         }
         long fileWriteStartTime = System.currentTimeMillis();
+        MhFileAggregatorHelper.printToConsole("!!!!!!!!!!!! calling writeToFile");
+
         mhFileWriter.writeToFile(fileContentsTreeMap);// UseThisToUseTreeMap
         long fileWriteEndTime = System.currentTimeMillis();
         double fileWriteTimeInSeconds = getTimeDiffInSeconds(fileWriteEndTime, fileWriteStartTime);

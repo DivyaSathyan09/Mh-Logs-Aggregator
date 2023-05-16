@@ -14,7 +14,7 @@ public class MhFileConstants {
     public static final String LOG_FOLDER_LOCATION = "logFolderLocation";
     public static final String NEW_LINE_CHAR = "\n";
     public static final String save_decrypted_files="n";
-    public static final String USER_PERMISSION_N0="x";
+    public static final String USER_PERMISSION_N0="n";
     public static final String USER_PERMISSION_YES ="y";
     public static final String USER_PROMPT_SPACE = "**********************************************************";
     public static final String TOTAL_FILES= "totalFiles";
